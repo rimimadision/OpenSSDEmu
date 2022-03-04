@@ -6,6 +6,7 @@
 #include "emu_log.h"
 #include "../ftl/ftl.h"
 #include "../hcl/hcl.h"
+#include "../ftl/ftl_taskqueue.h"
 u32 mem_base;
 
 int main()
@@ -18,7 +19,7 @@ int main()
     /* init moudules for FTL */
     // L2P_init_buffer();
 	HCL_init_host_cmd_entry_queue();
-// 	FTL_int_task_queue();
+	FTL_int_task_queue();
 // 	FCL_init_flash_controller();
 // 	FCL_init_hw_queue();
 // 	FTL_setup_core1();

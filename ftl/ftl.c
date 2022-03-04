@@ -27,7 +27,7 @@ void *FTL_core0_task_run()
 
 //		if (cnt%100000 == 0)
 //			xil_printf("ftl core0 task polling!\n");
-		// FTL_core0task_polling();
+		FTL_core0task_polling();
 
 //		if (cnt%100000 == 0)
 //			xil_printf("gc task run!\n");
