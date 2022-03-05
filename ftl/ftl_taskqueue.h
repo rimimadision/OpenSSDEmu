@@ -15,7 +15,7 @@ typedef struct _ftl_task_queue_entry
     // u8 resv;
     host_cmd_entry *queue[TASK_QUEUE_MAX];
     host_cmd_entry_status status;
-    int (*func)(host_cmd_entry *hcmd_entry);
+    unsigned (*func)(host_cmd_entry *hcmd_entry);
 } ftl_task_queue_entry;
 
 //ftl_task_queue_entry *ftl_task_queue; //HCE_INIT = 6

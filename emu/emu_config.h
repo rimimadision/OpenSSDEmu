@@ -7,7 +7,7 @@
 #define EMU
 
 #ifdef EMU
-
+#define EMU_SINGLE_CORE
 
 #endif // EMU == ON
 

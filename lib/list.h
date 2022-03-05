@@ -2,7 +2,7 @@
 #define LIST_H
 
 #include"type.h"
-
+#include <stddef.h>
 typedef struct _list_node
 {
 	struct _list_node *prev;

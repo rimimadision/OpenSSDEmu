@@ -5,7 +5,7 @@
 #include "../lib/dprint.h"
 
 #include "ftl_core0.h"
-#include "ftl_core1.h"
+// #include "ftl_core1.h"
 
 ftl_task_queue_entry *ftl_task_queue;
 
@@ -32,7 +32,7 @@ Return value: �޷���ֵ
 void FTL_int_task_queue(void)
 {
     u32 i, j;
-    ftl_task_queue = FTL_TASK_Q;
+    ftl_task_queue = (ftl_task_queue_entry *)FTL_TASK_Q;
     for (i = 0; i < HCE_INIT; i++)
     {
         ftl_task_queue[i].head = 0;

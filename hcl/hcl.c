@@ -3,8 +3,13 @@
 #include"../config/mem.h"
 #include"../lib/type.h"
 #include"../lib/dprint.h"
-
+#include "../emu/emu_config.h"
+#ifdef EMU
+#include "../emu/emu_log.h"
+#include<string.h>
+#else
 #include"xil_printf.h"
+#endif
 
 #define DEBUG_TEST
 static host_cmd_entry *hcmd_queue = NULL;

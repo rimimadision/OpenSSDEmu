@@ -1,6 +1,6 @@
 #ifndef EMU_H
 #define EMU_h
 
-extern void *mem_base;
-extern void *shm_base;
+extern u32 mem_base;
+extern u32 shm_base;
 #endif

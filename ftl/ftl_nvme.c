@@ -1,5 +1,6 @@
 #include "../emu/emu_config.h"
 #include "ftl_nvme.h"
+#include "ftl_taskqueue.h"
 #ifndef EMU
 #include "../nvme/io_access.h"
 #include "../nvme/nvme.h"
@@ -57,6 +58,8 @@ void FTL_nvme_req_polling()
         {
             break;
         }
+
+        emu_log_println(LOG, "get one cmd");
 
         host_cmd_entry *hcmd = HCL_get_host_cmd_entry();
 
@@ -229,7 +232,12 @@ void ftl_get_rdy_list(shm_index *index, shm_cmd *scmd)
     }
 
     *index = shm_list_remove(RDY_LIST);
-    memcpy(scmd, SHM_SLOT(*index), sizeof(shm_cmd));
+    shm_cmd *cmd = SHM_SLOT(*index);
+    if(!cmd)
+    {
+        emu_log_println(ERR, "NULL cmd in shm");
+    }
+    memcpy(scmd, cmd, sizeof(shm_cmd));
     /* 
      * NOTE: 目前还未添加模拟释放NVMe槽中命令的操作，
      * 这个过程应该是在数据传输完成后自动进行 

@@ -39,7 +39,7 @@ void send_write_cmd_to_shm(unsigned long long offset, void *data_buf, unsigned l
 	assert(i <= 255 && i >= 0);
 	head_slot->lpn = lpn;
 	head_slot->ops = SHM_WRITE_OPS;
-	head_slot->size = (4 * KB);
+	head_slot->size = data_len;
 	shm_list_add_x64(shm_base, i, RDY_LIST);  
 }
 
@@ -56,7 +56,7 @@ void send_read_cmd_to_shm(unsigned long long offset, void *data_buf, unsigned lo
 	assert(i <= 255 && i >= 0);
 	head_slot->lpn = lpn;
 	head_slot->ops = SHM_READ_OPS;
-	head_slot->size = (4 * KB);
+	head_slot->size = data_len;
 	shm_list_add_x64(shm_base, i, RDY_LIST);
 }
 

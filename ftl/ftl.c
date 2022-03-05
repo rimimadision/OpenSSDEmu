@@ -1,6 +1,6 @@
 #include"ftl.h"
 #include "../emu/emu_log.h"
-// #include"ftl_taskqueue.h"
+#include"ftl_taskqueue.h"
 #include"ftl_nvme.h"
 // #include"../config/config.h"
 // #include"../config/mem.h"

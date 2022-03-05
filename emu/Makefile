@@ -1,14 +1,15 @@
 BUILD_EMU_DIR=./build_emu
 CC=gcc
 SRC=$(wildcard *.c ./*/*.c) 
-SRC+=../ftl/ftl.c #../ftl/ftl_nvme.c ../ftl/ftl_taskqueue.c ../ftl/ftl_core0.c ../ftl/ftl_core1.c
-# SRC+=../hcl/hcl.c
-# SRC+=../buffer/buffer.c
-SRC+= ../lib/list.c
-#../lib/lock.c ../lib/dprint.c
-# SRC+=../nvme/host_lld.c
-# SRC+=../fcl/fcl.c
-# SRC+=../l2p/l2p.c
+SRC+=../ftl/ftl.c ../ftl/ftl_nvme.c ../ftl/ftl_taskqueue.c ../ftl/ftl_core0.c #../ftl/ftl_core1.c
+SRC+=../hcl/hcl.c
+SRC+=../buffer/buffer.c
+SRC+= ../lib/list.c ../lib/lock.c ../lib/dprint.c
+SRC+=../nvme/host_lld.c
+SRC+=../fcl/fcl.c
+SRC+=../l2p/l2p.c
+SRC+=../gc/gc.c
+
 OBJS=$(patsubst %.c,%.o,$(notdir $(SRC)))
 
 all:

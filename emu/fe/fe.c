@@ -74,7 +74,7 @@ void fe_init()
     // shm_unlink(SHM_NAME);
 
     /* ========== init semaphore to synchronize fio and emu ========== */
-    sem_unlink(SEM_NAME);
+    // sem_unlink(SEM_NAME);
     sem_id = sem_open(SEM_NAME, O_CREAT | O_RDWR, 0666, 1);
 
     if (sem_id == SEM_FAILED)
@@ -83,6 +83,16 @@ void fe_init()
         sem_unlink(SEM_NAME);
         exit(1);
     }
+
+    /* Add one test cmd */
+    shm_index t_i = shm_list_remove(FREE_LIST);
+    shm_cmd *t_cmd = SHM_SLOT(t_i);
+    t_cmd->lpn = 0;
+    t_cmd->ops = SHM_WRITE_OPS;
+    t_cmd->size = 16 * KB;
+    shm_list_add(t_i, RDY_LIST);
+
+
     // int v = 0;sem_getvalue(sem_id, &v);
 	//     printf("%d\n", v);
 
@@ -119,5 +129,10 @@ void *fe()
 {
     emu_log_println(LOG, "Fe start");
 
+    while (1)
+    {
+        /* code */
+    }
+    
 
 }

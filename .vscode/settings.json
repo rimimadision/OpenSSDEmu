@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "dprint.h": "c",
+        "l2p.h": "c",
+        "ftl.h": "c",
+        "ftl_taskqueue.h": "c",
+        "emu_log.h": "c"
+    }
+}
