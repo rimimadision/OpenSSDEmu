@@ -149,7 +149,7 @@ void dump_free_buf_list()
 {
 	buffer_entry *buf;
 
-	list_for_each_entry(buf, &free_buf_list_head, free_list_node)
+	each_entry(buf, &free_buf_list_head, free_list_node)
 	{
 		xil_printf("dump_free_buf_list, buf_id is %d \n", buf->buf_id);
 	}

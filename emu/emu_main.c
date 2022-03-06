@@ -38,7 +38,7 @@ int main()
 	GC_gather_init();
 
     fe_init();
-    // be_init();
+    be_init();
     emu_log_println(LOG, "Emu init done");
     
     pthread_t fe_pid, ftl_pid;

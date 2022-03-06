@@ -32,6 +32,8 @@ void *FTL_core0_task_run()
 //		if (cnt%100000 == 0)
 //			xil_printf("gc task run!\n");
 		// GC_task_run();
+
+		FTL_CQ_polling();
 	}
 }
 

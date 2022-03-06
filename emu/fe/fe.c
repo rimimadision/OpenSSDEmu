@@ -84,13 +84,13 @@ void fe_init()
         exit(1);
     }
 
-    // /* Add one test cmd */
-    // shm_index t_i = shm_list_remove(FREE_LIST);
-    // shm_cmd *t_cmd = SHM_SLOT(t_i);
-    // t_cmd->lpn = 0;
-    // t_cmd->ops = SHM_WRITE_OPS;
-    // t_cmd->size = 16 * KB;
-    // shm_list_add(t_i, RDY_LIST);
+    /* Add one test cmd */
+    shm_index t_i = shm_list_remove(FREE_LIST);
+    shm_cmd *t_cmd = SHM_SLOT(t_i);
+    t_cmd->lpn = 0;
+    t_cmd->ops = SHM_WRITE_OPS;
+    t_cmd->size = 16 * KB;
+    shm_list_add(t_i, RDY_LIST);
 
 
     // int v = 0;sem_getvalue(sem_id, &v);

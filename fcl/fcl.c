@@ -20,7 +20,6 @@ static hw_queue *hw_CQ[4];
 #include "../emu/emu_log.h"
 #include "../emu/emu_io.h"
 u32 fcl_base;
-pthread_t fcl_be_mutex;
 #endif
 
 /**********************************************************************************
@@ -249,7 +248,6 @@ u32 FCL_get_free_SQ_entry(u32 ch)
     {
         return INVALID_INDEX;
     }
-
 #ifndef EMU
     asm("isb");
 #endif
@@ -286,7 +284,6 @@ u32 FCL_SQ_empty(u32 ch)
             }
         }
     }
-
     return TRUE;
 }
 
@@ -343,9 +340,6 @@ Return value: ce瀵勫瓨鍣ㄥ湴鍧�
 ***********************************************************************************/
 u32 FCL_get_fifo_status(u32 ch)
 {
-    // 杩欐槸涓存椂鍔犱笂鐨刢h绛変簬0鐨�
-    // ch = 1;
-    //涓嬮潰鏄寮忕殑
     u32 reg_data = 0;
 
     switch (ch)
@@ -415,6 +409,9 @@ Return value: None
 ***********************************************************************************/
 u32 FCL_send_SQ_entry(u32 index, u32 ch, u32 ce)
 {
+#ifdef EMU
+    be_set_sq();
+#endif
     //
     // xil_printf("index ch ce %d %d %d\n",index,ch,ce);
     u32 reg_data = FCL_get_fifo_status(ch);
