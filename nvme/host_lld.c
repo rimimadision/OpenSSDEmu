@@ -586,5 +586,5 @@ void set_auto_tx_dma(unsigned int cmdSlotTag, unsigned int cmd4KBOffset, unsigne
 
 void set_auto_rx_dma(unsigned int cmdSlotTag, unsigned int cmd4KBOffset, unsigned int devAddr)
 {
-	emu_log_println(LOG, "do rx slot%d offset%d buf_addr%d", cmdSlotTag, cmd4KBOffset, devAddr);
+	emu_log_println(LOG, "do rx slot%u offset%u buf_addr%u", cmdSlotTag, cmd4KBOffset, devAddr);
 }

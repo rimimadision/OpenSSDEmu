@@ -23,7 +23,7 @@ void emu_log_println(LOG_TYPE T, const char fmt[], ...)
 		printf("[EMU DEBUG]");
 		break;
 	case XIL:
-		printf("[XIL DEBUG]");
+		printf("[XIL]");
 		vprintf(fmt, args);
 		va_end(args);
 		return;

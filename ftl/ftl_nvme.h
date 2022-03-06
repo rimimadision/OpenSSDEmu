@@ -10,7 +10,7 @@ void FTL_nvme_req_polling();
 #ifdef EMU
 #include "../emu/fe/shmem.h"
 void ftl_get_rdy_list(shm_index *index, shm_cmd *scmd);
-
+void ftl_add_free_list(shm_index index, shm_cmd *scmd);
 
 #endif
 

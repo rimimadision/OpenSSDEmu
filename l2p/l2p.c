@@ -106,9 +106,9 @@ void L2P_init()
 
 //			lpn_ppn[ppn_index] = ppn_index;
 
-			if (ppn_index % 1000000 == 0) {
-				 xil_printf("now page no : %d, now block no : %d, maxblock : %d, maxipn : %d\n",ppn_index,block_no,maxblock,maxipn);
-			}
+			// if (ppn_index % 1000000 == 0) {
+			// 	 xil_printf("now page no : %u, now block no : %u, maxblock : %u, maxipn : %u\n",ppn_index,block_no,maxblock,maxipn);
+			// }
 
 		}
 	}

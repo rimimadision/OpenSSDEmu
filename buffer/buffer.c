@@ -124,15 +124,15 @@ u32 L2P_allocate_buf(u32 lpn)
 	else
 	{
 		//xil_printf("[L2P_allocate_buf]: free list is not empty %d \n", lpn);
-		xil_printf("l2p allocate buffer 7\n");
+		// xil_printf("l2p allocate buffer 7\n");
 		buf = container_of((&free_buf_list_head)->next, typeof(*buf), free_list_node);
-		xil_printf("l2p allocate buffer 8\n");
+		// xil_printf("l2p allocate buffer 8\n");
 		list_delete_head(&free_buf_list_head);
 		//xil_printf("list_delete_head(&free_buf_list_head) \n");
 
-		xil_printf("l2p allocate buffer 9\n");
+		// xil_printf("l2p allocate buffer 9\n");
 		list_add_head(&buf->lru_list_node, &lru_buf_list_head);
-		xil_printf("l2p allocate buffer 10\n");
+		// xil_printf("l2p allocate buffer 10\n");
 		insert_hash_table_entry(lpn,buf);
 	}
 

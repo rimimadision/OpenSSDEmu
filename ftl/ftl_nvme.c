@@ -59,8 +59,6 @@ void FTL_nvme_req_polling()
             break;
         }
 
-        emu_log_println(LOG, "get one cmd");
-
         host_cmd_entry *hcmd = HCL_get_host_cmd_entry();
 
         if (hcmd != NULL)
@@ -85,8 +83,8 @@ void FTL_nvme_req_polling()
             // static u32 tmp_lpn = 0;
             // tmp_lpn++;
 
-            hcmd->start_lpa = hcmd->nvme_start_lba / 4; // TODO: 问一下这个lpa具体是什么的偏移
-            hcmd->req_num = hcmd->nvme_req_num / 4; // TODO: BUG when req_num != 四倍数
+            hcmd->start_lpa = hcmd->nvme_start_lba / 4; 
+            hcmd->req_num = hcmd->nvme_req_num / 4; 
             hcmd->cur_lpn = hcmd->start_lpa;
             hcmd->nvme_dma_cpl = 0;
 
@@ -106,7 +104,10 @@ void FTL_nvme_req_polling()
             FTL_sendhcmd(hcmd, HCE_CHECK_CACHE);
         }
         else
-        {
+        {   /* 
+             * if cmd not put in hcl, then it will be discarded
+             */
+            // ftl_add_free_list(index, &scmd);
             xil_printf("There is no host command now ! \n");
         }
     }
@@ -222,17 +223,17 @@ void FTL_nvme_req_polling()
 #ifdef EMU
 #include <unistd.h>
 #include <string.h>
-void ftl_get_rdy_list(shm_index *index, shm_cmd *scmd)
+void ftl_get_rdy_list(shm_index *pindex, shm_cmd *scmd)
 {
     // TODO: 加信号量
     if (shm_list_empty(RDY_LIST))
     {
-        *index = CMD_SLOT_NUM;
+        *pindex = CMD_SLOT_NUM;
         return;
     }
 
-    *index = shm_list_remove(RDY_LIST);
-    shm_cmd *cmd = SHM_SLOT(*index);
+    *pindex = shm_list_remove(RDY_LIST);
+    shm_cmd *cmd = SHM_SLOT(*pindex);
     if(!cmd)
     {
         emu_log_println(ERR, "NULL cmd in shm");
@@ -244,6 +245,26 @@ void ftl_get_rdy_list(shm_index *index, shm_cmd *scmd)
      * 可能以后需要？？？
     */
     //shm_list_add(*index, PROC_LIST);
+    shm_list_add(*pindex, FREE_LIST);
+    usleep(10000);
+}
+
+void ftl_add_free_list(shm_index index, shm_cmd *scmd)
+{
+    //TODO: sem
+    shm_cmd *cmd = SHM_SLOT(index);
+    if(!cmd)
+    {
+        emu_log_println(ERR, "NULL cmd in shm");
+    }
+    memcpy(cmd, scmd, sizeof(shm_cmd));
+    /* 
+     * NOTE: 目前还未添加模拟释放NVMe槽中命令的操作，
+     * 这个过程应该是在数据传输完成后自动进行 
+     * 可能以后需要？？？
+    */
+    //shm_list_add(*index, PROC_LIST);
+    shm_list_add(index, RDY_LIST);
     usleep(10000);
 }
 #endif

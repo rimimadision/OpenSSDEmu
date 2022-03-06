@@ -6,7 +6,9 @@
 #ifdef EMU
 #include "../lib/type.h"
 extern u32 mem_base;
+extern u32 fcl_base;
 #define MEM_BASE mem_base
+#define FCL_BASE fcl_base
 #else
 #define MEM_BASE 0
 #endif
@@ -120,18 +122,22 @@ extern u32 mem_base;
 //---------------------------------------------------------------
 // 0xffff0000->0xffffffff | 4095mb->4096mb | size 1mb | D&O | used for core1 stack
 //*********************************************************************************/
-// #define FCTL_BASE_ADDR (0x60000000)
+#ifndef EMU
+#define FCTL_BASE_ADDR (0x60000000)
+#else
+#define FCTL_BASE_ADDR (FCL_BASE)
+#endif
 
-// #define FCTL_BASE_SYS_REG (FCTL_BASE_ADDR + 0x00000000)
-// #define FCTL_BASE_SWQ_CMD_SRAM (FCTL_BASE_ADDR + 0x00100000)
-// #define FCTL_BASE_SWQ_SDR_SRAM (FCTL_BASE_ADDR + 0x00200000)
-// #define FCTL_BASE_SWQ_DDR_SRAM (FCTL_BASE_ADDR + 0x00300000)
+#define FCTL_BASE_SYS_REG (FCTL_BASE_ADDR + 0x00000000)
+#define FCTL_BASE_SWQ_CMD_SRAM (FCTL_BASE_ADDR + 0x00100000)
+#define FCTL_BASE_SWQ_SDR_SRAM (FCTL_BASE_ADDR + 0x00200000)
+#define FCTL_BASE_SWQ_DDR_SRAM (FCTL_BASE_ADDR + 0x00300000)
 
-// #define FCTL_BASE_CH0_REG (FCTL_BASE_ADDR + 0x00800000)
-// #define FLASH_CTL_CH0_QUEUE_BASE_ADDR (FCTL_BASE_ADDR + 0x00900000)
-// #define FLASH_CTL_CH1_QUEUE_BASE_ADDR (FCTL_BASE_ADDR + 0x00B00000)
-// #define FLASH_CTL_CH2_QUEUE_BASE_ADDR (FCTL_BASE_ADDR + 0x00D00000)
-// #define FLASH_CTL_CH3_QUEUE_BASE_ADDR (FCTL_BASE_ADDR + 0x00F00000)
+#define FCTL_BASE_CH0_REG (FCTL_BASE_ADDR + 0x00800000)
+#define FLASH_CTL_CH0_QUEUE_BASE_ADDR (FCTL_BASE_ADDR + 0x00900000)
+#define FLASH_CTL_CH1_QUEUE_BASE_ADDR (FCTL_BASE_ADDR + 0x00B00000)
+#define FLASH_CTL_CH2_QUEUE_BASE_ADDR (FCTL_BASE_ADDR + 0x00D00000)
+#define FLASH_CTL_CH3_QUEUE_BASE_ADDR (FCTL_BASE_ADDR + 0x00F00000)
 
 void init_core1_mmu();
 void init_core0_mmu();
