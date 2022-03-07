@@ -13,7 +13,7 @@
 #include "../buffer/buffer.h"
 #include "../gc/gc.h"
 #include "../fcl/fcl.h"
-
+#include "be/be.h"
 u32 mem_base;
 
 int main()
@@ -41,12 +41,13 @@ int main()
     be_init();
     emu_log_println(LOG, "Emu init done");
     
-    pthread_t fe_pid, ftl_pid;
+    pthread_t fe_pid, ftl_pid, be_pid;
     pthread_create(&fe_pid, NULL, fe, NULL);
     pthread_create(&ftl_pid, NULL, FTL_core0_task_run, NULL);
-    // pthread_create(&be_pid, NULL, , NULL);
+    pthread_create(&be_pid, NULL, be, NULL);
     pthread_join(fe_pid, NULL);
     pthread_join(ftl_pid, NULL);
+    pthread_join(be_pid, NULL);
 
     return 0;
 }

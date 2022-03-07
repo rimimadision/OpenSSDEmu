@@ -2,10 +2,14 @@
 #include"emu_log.h"
 #include <stdio.h>
 #include<stdarg.h>
+#include<pthread.h>
+
+pthread_mutex_t log_mu = PTHREAD_MUTEX_INITIALIZER;
 
 void emu_log_println(LOG_TYPE T, const char fmt[], ...)
 {
 #ifdef EMU
+	pthread_mutex_lock(&log_mu);
 	va_list args = NULL;
 	va_start(args, fmt);
 	switch (T)
@@ -22,11 +26,6 @@ void emu_log_println(LOG_TYPE T, const char fmt[], ...)
 	case DEBUG:
 		printf("[EMU DEBUG]");
 		break;
-	case XIL:
-		printf("[XIL]");
-		vprintf(fmt, args);
-		va_end(args);
-		return;
 	default:
 		printf("Log not identified\n");
 		return;
@@ -35,5 +34,6 @@ void emu_log_println(LOG_TYPE T, const char fmt[], ...)
 	vprintf(fmt, args);
 	printf("\n");
 	va_end(args);
+	pthread_mutex_unlock(&log_mu);
 #endif
 }

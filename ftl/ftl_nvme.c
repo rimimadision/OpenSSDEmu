@@ -58,9 +58,7 @@ void FTL_nvme_req_polling()
         {
             break;
         }
-
         host_cmd_entry *hcmd = HCL_get_host_cmd_entry();
-
         if (hcmd != NULL)
         {
             if (scmd.ops == SHM_WRITE_OPS)
@@ -225,10 +223,11 @@ void FTL_nvme_req_polling()
 #include <string.h>
 void ftl_get_rdy_list(shm_index *pindex, shm_cmd *scmd)
 {
-    // TODO: 加信号量
+    shm_get();
     if (shm_list_empty(RDY_LIST))
     {
         *pindex = CMD_SLOT_NUM;
+        shm_release();
         return;
     }
 
@@ -246,25 +245,19 @@ void ftl_get_rdy_list(shm_index *pindex, shm_cmd *scmd)
     */
     //shm_list_add(*index, PROC_LIST);
     shm_list_add(*pindex, FREE_LIST);
-    usleep(10000);
+    shm_release();
 }
 
 void ftl_add_free_list(shm_index index, shm_cmd *scmd)
 {
-    //TODO: sem
+    shm_get();
     shm_cmd *cmd = SHM_SLOT(index);
     if(!cmd)
     {
         emu_log_println(ERR, "NULL cmd in shm");
     }
     memcpy(cmd, scmd, sizeof(shm_cmd));
-    /* 
-     * NOTE: 目前还未添加模拟释放NVMe槽中命令的操作，
-     * 这个过程应该是在数据传输完成后自动进行 
-     * 可能以后需要？？？
-    */
-    //shm_list_add(*index, PROC_LIST);
     shm_list_add(index, RDY_LIST);
-    usleep(10000);
+    shm_release();
 }
 #endif

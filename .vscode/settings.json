@@ -11,6 +11,10 @@
         "mem.h": "c",
         "emu_io.h": "c",
         "config.h": "c",
-        "list.h": "c"
+        "list.h": "c",
+        "be.h": "c",
+        "shmem.h": "c",
+        "ftl_core1.h": "c",
+        "hcl.h": "c"
     }
 }

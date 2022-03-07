@@ -2,6 +2,7 @@
 #include "../emu/emu_log.h"
 #include"ftl_taskqueue.h"
 #include"ftl_nvme.h"
+#include "ftl_core1.h"
 // #include"../config/config.h"
 // #include"../config/mem.h"
 // #include"../lib/dprint.h"
@@ -33,7 +34,7 @@ void *FTL_core0_task_run()
 //			xil_printf("gc task run!\n");
 		// GC_task_run();
 
-		FTL_CQ_polling();
+		// FTL_CQ_polling();
 	}
 }
 

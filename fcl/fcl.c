@@ -12,14 +12,14 @@ static hw_queue *hw_CQ[4];
  * We will send the cmd into backend when using FCL_send_SQ_entry()
  * then write a log by backend, after that, it will change phase to make
  * FTL_CQ_Polling aware that log been written and FCL_free_SQ_entry()
- * So now we haven't use anything in SQ yet
+ * So now we haven't use fifo reg yet
  */
-#include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
 #include "../emu/emu_log.h"
 #include "../emu/emu_io.h"
 u32 fcl_base;
+#include "../emu/be/be.h"
 #endif
 
 /**********************************************************************************
@@ -155,6 +155,7 @@ void FCL_set_hw_base_addr(u32 ch, u32 sq_addr, u32 cq_addr)
         Xil_Out32((FLASH_CTL_CH3_REG_BASE_ADDR + 0x1C), cq_addr);
         break;
     }
+
 #ifndef EMU
     asm("isb");
 #endif
@@ -297,7 +298,6 @@ Return value: None
 ***********************************************************************************/
 void FCL_set_SQ_entry(u32 hcmd_entry_index, u32 SQ_entry_index, u32 buffer_index, u32 opcode, phy_page_addr *ppa, u32 cmd_sp)
 {
-
     u32 ch = ppa->ch;
 
     hw_SQ[ch]->hw_queue[SQ_entry_index].op = opcode;
@@ -324,7 +324,6 @@ void FCL_set_SQ_entry(u32 hcmd_entry_index, u32 SQ_entry_index, u32 buffer_index
     }
     // 灏唄ost command鐨刬ndex浼犻�掑埌SQ entry涓��
     hw_SQ[ch]->hw_queue[SQ_entry_index].hcmd_index = hcmd_entry_index;
-
 #ifndef EMU
     asm("isb");
 #endif
@@ -410,7 +409,8 @@ Return value: None
 u32 FCL_send_SQ_entry(u32 index, u32 ch, u32 ce)
 {
 #ifdef EMU
-    be_set_sq();
+    be_set_sq(index, &(hw_SQ[ch]->hw_queue[index]), ch, ce);
+    return SUCCESS;
 #endif
     //
     // xil_printf("index ch ce %d %d %d\n",index,ch,ce);

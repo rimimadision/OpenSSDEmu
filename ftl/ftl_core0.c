@@ -9,6 +9,7 @@
 #include "../l2p/l2p.h"
 #include "../buffer/buffer.h"
 #include "../nvme/host_lld.h"
+#include "../emu/be/be.h"
 
 u32 tmp_sq_index = 0;
 
@@ -108,7 +109,7 @@ u32 FTL_handle_tosq(host_cmd_entry *hcmd_entry)
         u32 cur_lpn = L2P_hcmd_buf_get_lpn(hcmd_id, send_sq_cnt);
         u32 cur_ppn;
 
-        xil_printf("ftl handle to sq 2\n");
+        xil_printf("ftl handle to sq 2 hcmd %d\n", hcmd_id);
         L2P_search_ppn_gc_v1(&cur_ppn, cur_lpn, op_code);
         L2P_calc_ppa(cur_ppn, &ppa);
 //    	static u32 tmp_sq_index = 0;
@@ -125,18 +126,19 @@ u32 FTL_handle_tosq(host_cmd_entry *hcmd_entry)
 #else
         tmp_sq_index = FCL_get_free_SQ_entry(ppa.ch);
 #endif
-
         if (tmp_sq_index == INVALID_ID)
         {
             FTL_sendhcmd(hcmd_entry, HCE_TO_SQ);
+            emu_log_println(DEBUG, "cannot get sq");
             return FAIL;
         }
 
         else
         {
+            // DEBUG: something wrong with buf
             u32 buf_index = L2P_hcmd_get_buffer(hcmd_id, send_sq_cnt);
             FCL_set_SQ_entry(hcmd_id, tmp_sq_index, buf_index, op_code, &ppa, HCMD_SPACE);
-
+            
             xil_printf("ftl handle to sq 3\n");
 
             u32 ret = SUCCESS;
@@ -168,7 +170,6 @@ Return value: SUCCESS OR FAIL
 ***********************************************************************************/
 u32 FTL_handle_datamove(host_cmd_entry *hcmd_entry)
 {
-    emu_log_println(LOG, "handling datamove");
     if (hcmd_entry == NULL)
     {
         debug_printf("[FTL_handle_checkcache]hcmd_entry=NULL \n");

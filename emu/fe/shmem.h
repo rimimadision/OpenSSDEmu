@@ -57,11 +57,12 @@ typedef enum LIST_TYPE
     PROC_LIST,
 } LIST_TYPE;
  
-#define FREE_LIST_HEAD ((volatile shm_list *)(SHM_CMD_BASE + SHM_CMD_SIZE))
-#define RDY_LIST_HEAD ((volatile shm_list *)(SHM_CMD_BASE + SHM_CMD_SIZE + sizeof(shm_list)))
-#define PROC_LIST_HEAD ((volatile shm_list *)(SHM_CMD_BASE + SHM_CMD_SIZE + 2 * sizeof(shm_list)))
+#define FREE_LIST_HEAD  ((volatile shm_list *)(SHM_CMD_BASE + SHM_CMD_SIZE))
+#define RDY_LIST_HEAD   ((volatile shm_list *)(SHM_CMD_BASE + SHM_CMD_SIZE + sizeof(shm_list)))
+#define PROC_LIST_HEAD  ((volatile shm_list *)(SHM_CMD_BASE + SHM_CMD_SIZE + 2 * sizeof(shm_list)))
+#define CTRL_BYTE       ((int *)(SHM_CMD_BASE + SHM_CMD_SIZE + 3 * sizeof(shm_list)))
 
-#define SHM_SIZE (SHM_DATA_SIZE + SHM_CMD_SIZE + 3 * sizeof(shm_list))
+#define SHM_SIZE (SHM_DATA_SIZE + SHM_CMD_SIZE + 3 * sizeof(shm_list) + sizeof(int))
 #define SHM_SLOT(n) ((n == CMD_SLOT_NUM) ? (NULL) : ((shm_cmd *)SHM_CMD_BASE + n))
 #ifdef __x86_64__
 #define SHM_INDEX(s) (((u64)(s)-SHM_CMD_BASE) / sizeof(shm_cmd))
@@ -70,11 +71,20 @@ typedef enum LIST_TYPE
 #endif
 
 #define SEM_NAME "sem_fio_emu"
+
 #ifdef __i386__
 /* 
  * cause we can't use pointer in shmem for different memspace in two process
  * so we need use index to replace
  */
+static inline void shm_get()
+{
+    while (__sync_lock_test_and_set(CTRL_BYTE, 1));
+}
+static inline void shm_release()
+{
+    __sync_lock_release (CTRL_BYTE);
+}
 static inline int shm_list_empty(LIST_TYPE l_t)
 {
     volatile shm_list *head;
@@ -179,6 +189,14 @@ static inline shm_index shm_list_remove(LIST_TYPE l_t)
     return i;
 }
 #elif __x86_64__
+static inline void shm_get(u64 shm_base)
+{
+    while (__sync_lock_test_and_set(CTRL_BYTE, 1));
+}
+static inline void shm_release(u64 shm_base)
+{
+    __sync_lock_release (CTRL_BYTE);
+}
 static inline int shm_list_empty_x64(u64 shm_base, LIST_TYPE l_t)
 {
     volatile shm_list *head;

@@ -73,21 +73,17 @@ static enum fio_q_status fio_emussd_queue(struct thread_data *td,
 	shm_base = (__u64)fed->shm_base;
 
 	fio_ro_check(td, io_u);
-	// sem_wait(sem_id);
+	shm_get(shm_base);
 
 	/*
 	 * check if free space for cmd
 	 * may get a lot competion here
-	 *
-	 * TODO: need use another sem to do pro and con model
-	 * 和师姐讨论一下
-	 *
 	 */
 	while (shm_list_empty_x64(shm_base, FREE_LIST))
 	{
-		// sem_post(sem_id);
-		usleep(10000);
-		// sem_wait(sem_id);
+		shm_release(shm_base);
+		usleep(10);
+		shm_get(shm_base);
 	}
 	log_info("[%ld] ", td->thread);
 	/* begin read and write */
@@ -110,9 +106,8 @@ static enum fio_q_status fio_emussd_queue(struct thread_data *td,
 		log_info("should have ddir\n");
 		do_io_u_sync(td, io_u);
 	}
-	// sem_post(sem_id);
 	pthread_mutex_unlock(&mu);
-	usleep(10000);
+	shm_release(shm_base);
 
 	return FIO_Q_COMPLETED;
 }

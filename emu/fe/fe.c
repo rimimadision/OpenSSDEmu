@@ -17,7 +17,6 @@
 #include "../../lib/list.h"
 
 u32 shm_base;
-sem_t *sem_id;
 
 void fe_init()
 {
@@ -25,7 +24,7 @@ void fe_init()
     int shm_fd;
 
     /* if SHM already exist, then delete it */
-    if(shm_open(SHM_NAME, O_RDONLY, 0666) != -1)
+    if (shm_open(SHM_NAME, O_RDONLY, 0666) != -1)
     {
         shm_unlink(SHM_NAME);
     }
@@ -70,69 +69,47 @@ void fe_init()
     {
         shm_list_add(i, FREE_LIST);
     }
-    // munmap(shm_base, SHM_SIZE);
-    // shm_unlink(SHM_NAME);
 
-    /* ========== init semaphore to synchronize fio and emu ========== */
-    // sem_unlink(SEM_NAME);
-    sem_id = sem_open(SEM_NAME, O_CREAT | O_RDWR, 0666, 1);
+    /* set atomic lock */
+    *CTRL_BYTE = 0;
 
-    if (sem_id == SEM_FAILED)
-    {
-        emu_log_println(ERR, "sem_open Failed");
-        sem_unlink(SEM_NAME);
-        exit(1);
-    }
-
-    /* Add one test cmd */
-    shm_index t_i = shm_list_remove(FREE_LIST);
-    shm_cmd *t_cmd = SHM_SLOT(t_i);
-    t_cmd->lpn = 0;
-    t_cmd->ops = SHM_WRITE_OPS;
-    t_cmd->size = 16 * KB;
-    shm_list_add(t_i, RDY_LIST);
-
-
-    // int v = 0;sem_getvalue(sem_id, &v);
-	//     printf("%d\n", v);
-
-    // while(1);
-    // emu_log_println(LOG, "value : %d", v);
-    // sem_close(sem_id);
-    // sem_unlink(SEM_NAME);
-
-    // emu_log_println(LOG, "shmbase : %x", SHM_BASE);
-    // emu_log_println(LOG, "shmDATAbase : %x", SHM_DATA_BASE);
-    // emu_log_println(LOG, "shmcmdbase : %x", SHM_CMD_BASE);
-    // emu_log_println(LOG, "free : %x", FREE_LIST_HEAD);
-    // emu_log_println(LOG, "rdy : %x", RDY_LIST_HEAD );
-    // emu_log_println(LOG, "proc : %x", PROC_LIST_HEAD );
-    // int count = 0;
     // while (1)
     // {
-    //     usleep(1000);
-    //     sem_wait(sem_id);
+    //     shm_get();
     //     if (shm_list_empty(RDY_LIST))
     //     {
-    //         sem_post(sem_id);
+    //         shm_release();
     //         continue;
     //     }
     //     shm_index i = shm_list_remove(RDY_LIST);
     //     shm_list_add(i, FREE_LIST);
     //     emu_log_println(LOG, "%d", SHM_SLOT(i)->lpn);
     //     // emu_log_println(LOG, "count %d KB", (count += 4));
-    //     sem_post(sem_id);
+    //     shm_release();
     // }
 }
 
 void *fe()
 {
     emu_log_println(LOG, "Fe start");
-
+    static int c = 0;
     while (1)
     {
-        /* code */
+        if(c == 500) break;
+        /* Add one test cmd */
+        c++;
+        shm_get();
+        while(shm_list_empty(FREE_LIST))
+        {
+            shm_release();
+            shm_get();
+        }
+        shm_index t_i = shm_list_remove(FREE_LIST);
+        shm_cmd *t_cmd = SHM_SLOT(t_i);
+        t_cmd->lpn = 20;
+        t_cmd->ops = SHM_READ_OPS;
+        t_cmd->size = 16 * KB;
+        shm_list_add(t_i, RDY_LIST);
+        shm_release();
     }
-    
-
 }
