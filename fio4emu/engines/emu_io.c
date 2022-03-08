@@ -16,6 +16,7 @@
 #include "../../emu/fe/shmem.h"
 #include "../fio.h"
 
+static int c = 0;
 pthread_mutex_t mu;
 sem_t *sem_id = NULL;
 
@@ -33,7 +34,7 @@ void send_write_cmd_to_shm(unsigned long long offset, void *data_buf, unsigned l
 	int lpn = offset / HOST_BLOCK_SIZE;
 
 	i = shm_list_remove_x64(shm_base, FREE_LIST);
-	log_info("remove %d lpn %llu\n", i, lpn);
+	log_info("remove %d lpn %llu c %d\n", i, lpn, ++c);
 	head_slot = SHM_SLOT(i);
 	assert(head_slot);
 	assert(i <= 255 && i >= 0);
@@ -50,7 +51,7 @@ void send_read_cmd_to_shm(unsigned long long offset, void *data_buf, unsigned lo
 	int lpn = offset / HOST_BLOCK_SIZE;
 
 	i = shm_list_remove_x64(shm_base, FREE_LIST);
-	log_info("remove %d lpn %llu\n", i, lpn);
+	log_info("remove %d lpn %llu c %d\n", i, lpn, ++c);
 	head_slot = SHM_SLOT(i);
 	assert(head_slot);
 	assert(i <= 255 && i >= 0);

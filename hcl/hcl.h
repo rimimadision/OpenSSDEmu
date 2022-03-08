@@ -57,6 +57,7 @@ typedef struct _host_cmd_entry
 
     hcmd_opcode op_code;
     host_cmd_entry_status status;
+    u32 emu_id;
 } host_cmd_entry;
 
 u32 HCL_get_hcmd_entry_index(host_cmd_entry *hcmd_entry);

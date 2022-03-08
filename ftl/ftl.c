@@ -34,7 +34,7 @@ void *FTL_core0_task_run()
 //			xil_printf("gc task run!\n");
 		// GC_task_run();
 
-		// FTL_CQ_polling();
+		FTL_CQ_polling();
 	}
 }
 

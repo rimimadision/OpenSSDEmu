@@ -73,20 +73,28 @@ Return value: None
 u32 FTL_CQ_polling()
 {
 #ifdef EMU
+	static int c = 0;
 	pthread_mutex_lock(&fcl_be_mutex);
+	// emu_log_println(LOG, "CQ here");
 	list_node *next_node;
-    for (list_node *node = complete_list.next; node != &complete_list; node = next_node)
+
+	for (list_node *head_node = complete_list.next; head_node != &complete_list; head_node = complete_list.next)
 	{
-		next_node = node->next;
-		registered_sq *sq = container_of(node, registered_sq, node);
-		/* DEBUG: never used */
-		emu_log_println(DEBUG, "complete sq of hcmd %u", sq->sq_entry.hcmd_index);
+		registered_sq *sq = container_of(head_node, registered_sq, node);
 		FCL_free_SQ_entry(sq->ch, sq->sq_index);
-		FTL_sendhcmd(HCL_get_hcmd_entry_addr(sq->sq_entry.hcmd_index), HCE_FROM_CQ);
+		host_cmd_entry *hcmd_entry = HCL_get_hcmd_entry_addr(sq->sq_entry->hcmd_index);
+		emu_log_println(DEBUG, "complete sq of hcmd %u",hcmd_entry->emu_id);
+		hcmd_entry->cpl_cnt++;
+		if (hcmd_entry->cpl_cnt == hcmd_entry->req_num)
+		{
+			FTL_sendhcmd(hcmd_entry, HCE_FROM_CQ);
+		}
+			
+		list_delete_head(&complete_list);
 		free(sq);
 	}
-	
-    pthread_mutex_unlock(&fcl_be_mutex);
+
+	pthread_mutex_unlock(&fcl_be_mutex);
 #else
 
 	static u32 cqpolling = 0;

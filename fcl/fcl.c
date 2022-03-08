@@ -409,7 +409,7 @@ Return value: None
 u32 FCL_send_SQ_entry(u32 index, u32 ch, u32 ce)
 {
 #ifdef EMU
-    be_set_sq(index, &(hw_SQ[ch]->hw_queue[index]), ch, ce);
+    be_send_sq(index, &(hw_SQ[ch]->hw_queue[index]), ch, ce);
     return SUCCESS;
 #endif
     //

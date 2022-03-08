@@ -46,6 +46,7 @@ void FTL_nvme_req_polling()
 {
 #ifdef EMU
     int i;
+    static int c = 0;
     shm_index index;
     shm_cmd scmd;
 
@@ -56,7 +57,7 @@ void FTL_nvme_req_polling()
         ftl_get_rdy_list(&index, &scmd);
         if (index == CMD_SLOT_NUM)
         {
-            break;
+            continue;
         }
         host_cmd_entry *hcmd = HCL_get_host_cmd_entry();
         if (hcmd != NULL)
@@ -98,7 +99,8 @@ void FTL_nvme_req_polling()
             hcmd->end_unalign_sqindex = 0;
             // used for finding cmd slot in shm 
             hcmd->nvme_cmd_slot = index;
-
+            hcmd->emu_id = ++c;
+            emu_log_println(LOG, "get cmd id: %d from fio", hcmd->emu_id);
             FTL_sendhcmd(hcmd, HCE_CHECK_CACHE);
         }
         else

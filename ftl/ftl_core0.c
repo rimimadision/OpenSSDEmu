@@ -48,13 +48,13 @@ u32 FTL_handle_checkcache(host_cmd_entry *hcmd_entry)
         {
             //    		xil_printf("ftl handle checkcache 4\n");
             // there should be have the dma translation.
-            L2P_hcmd_add_buffer(hcmd_id, buf_id, cur_lpn);
+            // L2P_hcmd_add_buffer(hcmd_id, buf_id, cur_lpn);
         }
         else
         {
             //    		xil_printf("ftl handle checkcache 5\n");
-            buf_id = L2P_allocate_buf(cur_lpn);
-            L2P_hcmd_add_buffer(hcmd_id, buf_id, cur_lpn);
+            // buf_id = L2P_allocate_buf(cur_lpn);
+            // L2P_hcmd_add_buffer(hcmd_id, buf_id, cur_lpn);
         }
 
         cur_cnt++;
@@ -74,7 +74,6 @@ u32 FTL_handle_checkcache(host_cmd_entry *hcmd_entry)
         //    	xil_printf("ftl handle checkcache 7\n");
         FTL_sendhcmd(hcmd_entry, HCE_TO_SQ);
     }
-
     return SUCCESS;
 }
 
@@ -96,22 +95,22 @@ u32 FTL_handle_tosq(host_cmd_entry *hcmd_entry)
 
     u32 op_code = hcmd_entry->op_code;
     u32 hcmd_id = HCL_get_hcmd_entry_index(hcmd_entry);
-    hcmd_entry->buf_cnt = L2P_get_hcmd_buff_cnt(hcmd_id);
-    u32 send_sq_cnt = hcmd_entry->send_sq_cnt;
+    hcmd_entry->buf_cnt = 1;//L2P_get_hcmd_buff_cnt(hcmd_id);
+    u32 send_sq_cnt = 0;//hcmd_entry->send_sq_cnt;
     u32 buf_cnt = hcmd_entry->buf_cnt;
 
     phy_page_addr ppa;
 
-    xil_printf("ftl handle to sq 1\n");
+    // xil_printf("ftl handle to sq 1\n");
 
     while (send_sq_cnt < buf_cnt)
     {
-        u32 cur_lpn = L2P_hcmd_buf_get_lpn(hcmd_id, send_sq_cnt);
+        u32 cur_lpn = 20;//L2P_hcmd_buf_get_lpn(hcmd_id, send_sq_cnt);
         u32 cur_ppn;
 
-        xil_printf("ftl handle to sq 2 hcmd %d\n", hcmd_id);
-        L2P_search_ppn_gc_v1(&cur_ppn, cur_lpn, op_code);
-        L2P_calc_ppa(cur_ppn, &ppa);
+        // xil_printf("ftl handle to sq 2 hcmd %d\n", hcmd_id);
+        // L2P_search_ppn_gc_v1(&cur_ppn, cur_lpn, op_code);
+        // L2P_calc_ppa(cur_ppn, &ppa);
 //    	static u32 tmp_sq_index = 0;
         /* gc,l2p not done yet, use a fake ppa here for test */
         ppa.ch = 0; 
@@ -136,10 +135,10 @@ u32 FTL_handle_tosq(host_cmd_entry *hcmd_entry)
         else
         {
             // DEBUG: something wrong with buf
-            u32 buf_index = L2P_hcmd_get_buffer(hcmd_id, send_sq_cnt);
+            u32 buf_index = 0;//L2P_hcmd_get_buffer(hcmd_id, send_sq_cnt);
             FCL_set_SQ_entry(hcmd_id, tmp_sq_index, buf_index, op_code, &ppa, HCMD_SPACE);
             
-            xil_printf("ftl handle to sq 3\n");
+            // xil_printf("ftl handle to sq 3\n");
 
             u32 ret = SUCCESS;
             do
@@ -151,7 +150,7 @@ u32 FTL_handle_tosq(host_cmd_entry *hcmd_entry)
         }
     }
 
-    xil_printf("ftl handle to sq 4\n");
+    // xil_printf("ftl handle to sq 4\n");
     hcmd_entry->send_sq_cnt = send_sq_cnt;
 
     // #if (CORE_MODE == SINGLE_CORE_MODE)
@@ -178,7 +177,7 @@ u32 FTL_handle_datamove(host_cmd_entry *hcmd_entry)
 
     u32 op_code = hcmd_entry->op_code;
     u32 hcmd_id = HCL_get_hcmd_entry_index(hcmd_entry);
-    hcmd_entry->buf_cnt = L2P_get_hcmd_buff_cnt(hcmd_id);
+    hcmd_entry->buf_cnt = 1;//L2P_get_hcmd_buff_cnt(hcmd_id);
     u32 buf_cnt = hcmd_entry->buf_cnt;
     u32 cmd_slot_tag = hcmd_entry->nvme_cmd_slot;
 
@@ -186,13 +185,13 @@ u32 FTL_handle_datamove(host_cmd_entry *hcmd_entry)
     {
         while (hcmd_entry->nvme_dma_cpl < buf_cnt)
         {
-            u32 buf_id = L2P_hcmd_get_buffer(hcmd_id, hcmd_entry->nvme_dma_cpl);
-            u32 buf_4KB_addr = L2P_get_buffer_addr(buf_id);
+            // u32 buf_id = L2P_hcmd_get_buffer(hcmd_id, hcmd_entry->nvme_dma_cpl);
+            // u32 buf_4KB_addr = L2P_get_buffer_addr(buf_id);
 
-            for (u32 i = 0; i < PAGE_SIZE / TU_SIZE; i++)
-            {
-                set_auto_tx_dma(cmd_slot_tag, i, buf_4KB_addr + 4096 * i);
-            }
+            // for (u32 i = 0; i < PAGE_SIZE / TU_SIZE; i++)
+            // {
+            //     set_auto_tx_dma(cmd_slot_tag, i, buf_4KB_addr + 4096 * i);
+            // }
             hcmd_entry->nvme_dma_cpl++;
         }
 
@@ -202,16 +201,16 @@ u32 FTL_handle_datamove(host_cmd_entry *hcmd_entry)
     {
         while (hcmd_entry->nvme_dma_cpl < buf_cnt)
         {
-            u32 buf_id = L2P_hcmd_get_buffer(hcmd_id, hcmd_entry->nvme_dma_cpl);
-            u32 buf_4KB_addr = L2P_get_buffer_addr(buf_id);
+            // u32 buf_id = L2P_hcmd_get_buffer(hcmd_id, hcmd_entry->nvme_dma_cpl);
+            // u32 buf_4KB_addr = L2P_get_buffer_addr(buf_id);
 
-            for (u32 i = 0; i < 4; i++)
-            {
-                set_auto_rx_dma(cmd_slot_tag, i, buf_4KB_addr + 4096 * i);
-                // there is 5.12us for each 4KB dma translation.
-                //#include"sleep.h"
-                //                usleep(8);
-            }
+            // for (u32 i = 0; i < 4; i++)
+            // {
+            //     set_auto_rx_dma(cmd_slot_tag, i, buf_4KB_addr + 4096 * i);
+            //     // there is 5.12us for each 4KB dma translation.
+            //     //#include"sleep.h"
+            //     //                usleep(8);
+            // }
             hcmd_entry->nvme_dma_cpl++;
         }
 
@@ -221,7 +220,6 @@ u32 FTL_handle_datamove(host_cmd_entry *hcmd_entry)
             //	xil_printf("handle_datamove has error !\n");
         }
     }
-
     return SUCCESS;
 }
 
@@ -235,6 +233,7 @@ Return value: SUCCESS OR FAIL
 ***********************************************************************************/
 u32 FTL_handle_fromcq(host_cmd_entry *hcmd_entry)
 {
+    // emu_log_println(LOG, "begine handle fromcq");
     if (hcmd_entry == NULL)
     {
         // debug_printf("[INFO] [FTL_handle_fromcq]hcmd_entry=NULL \n");
@@ -265,13 +264,16 @@ Return value: SUCCESS OR FAIL
 ***********************************************************************************/
 u32 FTL_handle_finish(host_cmd_entry *hcmd_entry)
 {
+    static int cc = 0;
+    emu_log_println(LOG, "finish %u count %d", hcmd_entry->emu_id, ++cc);
+    //  emu_log_println(LOG, "begine handle finish");
     if (hcmd_entry == NULL)
     {
-        // debug_printf("[INFO] [FTL_handle_finish]hcmd_entry=NULL \n");
+        printf("[INFO] [FTL_handle_finish]hcmd_entry=NULL \n");
         return FAIL;
     }
 
-    L2P_hcmd_free_buf(HCL_get_hcmd_entry_index(hcmd_entry));
+    // L2P_hcmd_free_buf(HCL_get_hcmd_entry_index(hcmd_entry));
     HCL_reclaim_hcmd_entry(hcmd_entry);
 
     return SUCCESS;
