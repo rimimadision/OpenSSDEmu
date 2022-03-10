@@ -31,6 +31,6 @@ emu:
 	sudo $(BUILD_EMU_DIR)/emu 
 #2>&1 | tee emu_log 
 clean:
-	rm -f $(BUILD_EMU_DIR)/* && 
+	rm -f $(BUILD_EMU_DIR)/* 
 	rm -f *.o *.d
 all:init emu
