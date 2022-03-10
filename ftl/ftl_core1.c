@@ -82,7 +82,7 @@ u32 FTL_CQ_polling()
 	{
 		registered_sq *sq = container_of(head_node, registered_sq, node);
 		FCL_free_SQ_entry(sq->ch, sq->sq_index);
-		host_cmd_entry *hcmd_entry = HCL_get_hcmd_entry_addr(sq->sq_entry->hcmd_index);
+		host_cmd_entry *hcmd_entry = HCL_get_hcmd_entry_addr(sq->sq_entry.hcmd_index);
 		emu_log_println(DEBUG, "complete sq of hcmd %u",hcmd_entry->emu_id);
 		hcmd_entry->cpl_cnt++;
 		if (hcmd_entry->cpl_cnt == hcmd_entry->req_num)

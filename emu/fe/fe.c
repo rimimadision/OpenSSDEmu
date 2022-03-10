@@ -95,9 +95,9 @@ void *fe()
     static int c = 0;
     while (1)
     {
-        usleep(10000);
-        emu_log_println(LOG, "fe");
-        // if(c == 10000) break;
+        usleep(100);
+        // emu_log_println(LOG, "fe");
+        // if(c == 500) exit(0);
         // /* Add one test cmd */
         // c++;
         // shm_get();

@@ -16,6 +16,7 @@
         "shmem.h": "c",
         "ftl_core1.h": "c",
         "hcl.h": "c",
-        "emu_config.h": "c"
+        "emu_config.h": "c",
+        "unistd.h": "c"
     }
 }

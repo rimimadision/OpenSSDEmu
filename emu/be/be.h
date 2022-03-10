@@ -16,7 +16,7 @@ typedef struct registered_sq
 {
     int ch;
     u32 sq_index;
-    hw_queue_entry *sq_entry;
+    hw_queue_entry sq_entry;
     list_node node;
 }registered_sq;
 

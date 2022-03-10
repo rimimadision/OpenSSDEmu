@@ -57,10 +57,9 @@ Return value: 鏉╂柨娲杊cmd閹稿洭鎷＄悰銊с仛閹存劕濮涢敍瀛�
 ***********************************************************************************/
 host_cmd_entry *HCL_get_host_cmd_entry()
 {
-	static u32 hcmd_index = 0;
-	hcmd_index++;
-	hcmd_index = hcmd_index%HCMD_NUM;
-	return &hcmd_queue[hcmd_index];
+	// static u32 hcmd_index = 0;
+	// hcmd_index++;
+	// hcmd_index = hcmd_index%HCMD_NUM;
 
     u32 i, j, index;
     index = -1;
