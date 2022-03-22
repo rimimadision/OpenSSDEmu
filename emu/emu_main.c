@@ -14,17 +14,12 @@
 #include "../gc/gc.h"
 #include "../fcl/fcl.h"
 #include "be/be.h"
+
+/* mem_base of simulated DRAM */
 u32 mem_base;
-
-int main()
+void EMU_init_ftl_moudles()
 {
-    emu_log_println(LOG, "SSDEmu begin");
-    /* alloc 1 GB memory aligned 16KB to simulate DRAM */
-    mem_base = (u32)malloc(1 * GB + 16 * KB);
-    mem_base = ((((u32)(mem_base)) >> 14) << 14) + 16 * KB;
-    memset((void *)mem_base, 0, 1 * GB);
-
-    /* init moudules for FTL */
+     /* init moudules for FTL */
     L2P_init_buffer();
 	HCL_init_host_cmd_entry_queue();
 	FTL_int_task_queue();
@@ -36,10 +31,21 @@ int main()
 	GC_init();
 	L2P_init();
 	GC_gather_init();
+}
 
-    fe_init();
-    be_init();
-    emu_log_println(LOG, "Emu init done");
+int main()
+{
+    EMU_log_println(LOG, "SSDEmu begin");
+    /* alloc 1 GB memory aligned 16KB to simulate DRAM */
+    mem_base = (u32)malloc(1 * GB + 16 * KB);
+    mem_base = ((((u32)(mem_base)) >> 14) << 14) + 16 * KB;
+    memset((void *)mem_base, 0, 1 * GB);
+
+    EMU_init_ftl_moudles();
+    FE_init();
+    BE_init();
+    
+    EMU_log_println(LOG, "Emu init done");
     
     pthread_t fe_pid, ftl_pid, be_pid;
     pthread_create(&fe_pid, NULL, fe, NULL);

@@ -113,7 +113,7 @@ u32 FTL_handle_tosq(host_cmd_entry *hcmd_entry)
         // L2P_calc_ppa(cur_ppn, &ppa);
 //    	static u32 tmp_sq_index = 0;
         /* gc,l2p not done yet, use a fake ppa here for test */
-        ppa.ch = 0; 
+        ppa.ch = 1; 
         ppa.ce = 0;
         ppa.nand_flash_addr.slc_mode.lun = 0;
         ppa.nand_flash_addr.slc_mode.plane = 0;
@@ -128,7 +128,7 @@ u32 FTL_handle_tosq(host_cmd_entry *hcmd_entry)
         if (tmp_sq_index == INVALID_ID)
         {
             FTL_sendhcmd(hcmd_entry, HCE_TO_SQ);
-            emu_log_println(DEBUG, "cannot get sq");
+            EMU_log_println(DEBUG, "cannot get sq");
             return FAIL;
         }
 
@@ -265,7 +265,7 @@ Return value: SUCCESS OR FAIL
 u32 FTL_handle_finish(host_cmd_entry *hcmd_entry)
 {
     static int cc = 0;
-    emu_log_println(LOG, "finish %u count %d", hcmd_entry->emu_id, ++cc);
+    EMU_log_println(LOG, "finish %u count %d", hcmd_entry->emu_id, ++cc);
     //  emu_log_println(LOG, "begine handle finish");
     if (hcmd_entry == NULL)
     {

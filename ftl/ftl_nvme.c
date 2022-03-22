@@ -49,23 +49,23 @@ void FTL_nvme_req_polling()
     static int c = 0;
     shm_index index;
     shm_cmd scmd;
-    
+
     for (i = 0; i < MAX_POLLING_NUM; i++)
     {
-        #ifdef EMU
+#ifdef EMU
         /* When enable emu, ftl will get cmd from shm and add it to hcl */
         index = CMD_SLOT_NUM;
-        ftl_get_rdy_list(&index, &scmd);
+        SHM_get_rdy_list(&index, &scmd);
         if (index == CMD_SLOT_NUM)
         {
             continue;
         }
-        #endif
+#endif
         host_cmd_entry *hcmd = HCL_get_host_cmd_entry();
 
         if (hcmd != NULL)
         {
-            
+
             if (scmd.ops == SHM_WRITE_OPS)
             {
                 hcmd->op_code = HCE_WRITE;
@@ -76,7 +76,7 @@ void FTL_nvme_req_polling()
             }
             else
             {
-                emu_log_println(ERR, "get wrong cmd from shm");
+                EMU_log_println(ERR, "get wrong cmd from shm");
             }
 
             hcmd->nvme_start_lba = scmd.lpn;
@@ -104,16 +104,15 @@ void FTL_nvme_req_polling()
             // used for finding cmd slot in shm
             hcmd->nvme_cmd_slot = index;
             hcmd->emu_id = ++c;
-            emu_log_println(LOG, "get cmd id: %d from fio", hcmd->emu_id);
+            EMU_log_println(LOG, "get cmd id: %d from fio", hcmd->emu_id);
             FTL_sendhcmd(hcmd, HCE_CHECK_CACHE);
-            ftl_add_free_list(index);
+            SHM_add_free_list(index);
         }
         else
-        { /*
-           * if cmd not put in hcl, then it will be discarded
-           */
-            xil_printf("There is no host command now ! \n");
-            ftl_add_rdy_list(index, &scmd);
+        {
+            /* if no hcmd now, we will add cmd back to shm*/
+            // xil_printf("There is no host command now ! \n");
+            SHM_add_rdy_list(index, &scmd);
         }
     }
 #else
@@ -224,53 +223,3 @@ void FTL_nvme_req_polling()
     }
 #endif
 }
-
-#ifdef EMU
-#include <unistd.h>
-#include <string.h>
-void ftl_get_rdy_list(shm_index *pindex, shm_cmd *scmd)
-{
-    shm_get();
-    if (shm_list_empty(RDY_LIST))
-    {
-        *pindex = CMD_SLOT_NUM;
-        shm_release();
-        return;
-    }
-
-    *pindex = shm_list_remove(RDY_LIST);
-    shm_cmd *cmd = SHM_SLOT(*pindex);
-    if (!cmd)
-    {
-        emu_log_println(ERR, "NULL cmd in shm");
-    }
-    memcpy(scmd, cmd, sizeof(shm_cmd));
-    /*
-     * NOTE: 目前还未添加模拟释放NVMe槽中命令的操作，
-     * 这个过程应该是在数据传输完成后自动进行
-     * 可能以后需要？？？
-     */
-    // shm_list_add(*index, PROC_LIST);
-    shm_release();
-}
-
-void ftl_add_rdy_list(shm_index index, shm_cmd *scmd)
-{
-    shm_get();
-    shm_cmd *cmd = SHM_SLOT(index);
-    if (!cmd)
-    {
-        emu_log_println(ERR, "NULL cmd in shm");
-    }
-    memcpy(cmd, scmd, sizeof(shm_cmd));
-    shm_list_add(index, RDY_LIST);
-    shm_release();
-}
-
-void ftl_add_free_list(shm_index index)
-{
-    shm_get();
-    shm_list_add(index, FREE_LIST);
-    shm_release();
-}
-#endif

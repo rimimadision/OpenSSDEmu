@@ -11,7 +11,7 @@ void debug_printf(const char8 *fmt, ...)
     va_list args;
     va_start(args, fmt);
     #ifdef EMU
-    emu_log_println(DEBUG, fmt, args);
+    EMU_log_println(DEBUG, fmt, args);
     #else
     xil_printf(fmt, args);
     #endif

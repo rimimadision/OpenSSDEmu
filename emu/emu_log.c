@@ -6,7 +6,7 @@
 
 pthread_mutex_t log_mu = PTHREAD_MUTEX_INITIALIZER;
 
-void emu_log_println(LOG_TYPE T, const char fmt[], ...)
+void EMU_log_println(LOG_TYPE T, const char fmt[], ...)
 {
 #ifdef EMU
 	pthread_mutex_lock(&log_mu);

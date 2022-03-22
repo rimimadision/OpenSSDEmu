@@ -26,39 +26,30 @@ struct fio_emussd_data
 	void *shm_base;
 };
 
-// TODO: send buf data to shm when write
-void send_write_cmd_to_shm(unsigned long long offset, void *data_buf, unsigned long long data_len, __u64 shm_base)
+
+void send_cmd_to_shm(unsigned long long offset, void *data_buf, unsigned long long data_len, __u64 shm_base, u32 ops)
 {
-	shm_index i;
-	shm_cmd *head_slot;
-	int lpn = offset / HOST_BLOCK_SIZE;
+	shm_index victim_slot_index; 
+	shm_cmd *victim_slot;
+	__u64 lpn = offset / HOST_BLOCK_SIZE;
 
-	i = shm_list_remove_x64(shm_base, FREE_LIST);
-	log_info("remove %d lpn %llu c %d\n", i, lpn, ++c);
-	head_slot = SHM_SLOT(i);
-	assert(head_slot);
-	assert(i <= 255 && i >= 0);
-	head_slot->lpn = lpn;
-	head_slot->ops = SHM_WRITE_OPS;
-	head_slot->size = data_len;
-	shm_list_add_x64(shm_base, i, RDY_LIST);  
-}
+	/* get free slot from free list */
+	victim_slot_index = shm_list_remove_x64(shm_base, FREE_LIST);
+	victim_slot = SHM_SLOT(victim_slot_index);
+	log_info("remove %d lpn %llu c %d\n", victim_slot_index, lpn, ++c);
+	assert(victim_slot);
+	assert(victim_slot_index <= 255 && victim_slot_index >= 0);
 
-void send_read_cmd_to_shm(unsigned long long offset, void *data_buf, unsigned long long data_len, __u64 shm_base)
-{
-	shm_index i;
-	shm_cmd *head_slot;
-	int lpn = offset / HOST_BLOCK_SIZE;
+	victim_slot->lpn = lpn;
+	victim_slot->ops = ops;
+	victim_slot->size = data_len;
+	if(ops == SHM_WRITE_OPS)
+	{
+		// TODO: send buf data to shm when write,是否需要？？
+	}
 
-	i = shm_list_remove_x64(shm_base, FREE_LIST);
-	log_info("remove %d lpn %llu c %d\n", i, lpn, ++c);
-	head_slot = SHM_SLOT(i);
-	assert(head_slot);
-	assert(i <= 255 && i >= 0);
-	head_slot->lpn = lpn;
-	head_slot->ops = SHM_READ_OPS;
-	head_slot->size = data_len;
-	shm_list_add_x64(shm_base, i, RDY_LIST);
+	/* add to rdy_list wait FTL get it */
+	shm_list_add_x64(shm_base, victim_slot_index, RDY_LIST);  
 }
 
 static enum fio_q_status fio_emussd_queue(struct thread_data *td,
@@ -90,11 +81,11 @@ static enum fio_q_status fio_emussd_queue(struct thread_data *td,
 	/* begin read and write */
 	if (io_u->ddir == DDIR_READ)
 	{
-		send_read_cmd_to_shm(io_u->offset, io_u->xfer_buf, io_u->xfer_buflen, shm_base);
+		send_cmd_to_shm(io_u->offset, io_u->xfer_buf, io_u->xfer_buflen, shm_base, SHM_READ_OPS);
 	}
 	else if (io_u->ddir == DDIR_WRITE)
 	{
-		send_write_cmd_to_shm(io_u->offset, io_u->xfer_buf, io_u->xfer_buflen, shm_base);
+		send_cmd_to_shm(io_u->offset, io_u->xfer_buf, io_u->xfer_buflen, shm_base, SHM_WRITE_OPS);
 	}
 	else if (io_u->ddir == DDIR_TRIM)
 	{
@@ -119,20 +110,6 @@ static int fio_emussd_open_file(struct thread_data *td, struct fio_file *f)
 	pthread_mutex_lock(&mu);
 
 	fed = (struct fio_emussd_data *)calloc(1, sizeof(struct fio_emussd_data));
-	// if (sem_id == NULL)
-	// {
-	// 	sem_id = sem_open(SEM_NAME, O_RDWR);
-	// 	sem_wait(sem_id);
-	// 	if (sem_id == SEM_FAILED)
-	// 	{
-	// 		log_err("sem_open Failed\n");
-	// 		sem_unlink(SEM_NAME);
-	// 		return 1;
-	// 	}
-	// 	int v = 0;
-	// 	sem_getvalue(sem_id, &v);
-	// 	printf("sem : %d\n", v);
-	// }
 
 	/* create the shared memory segment as if it was a file */
 	fed->shm_fd = shm_open(SHM_NAME, O_RDWR, 0666);

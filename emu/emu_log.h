@@ -17,7 +17,7 @@ typedef enum LOG_TYPE
 	DEBUG,
 } LOG_TYPE;
 
-void emu_log_println(LOG_TYPE T, const char fmt[], ...);
+void EMU_log_println(LOG_TYPE T, const char fmt[], ...);
 static inline void dprint(const char fmt[], ...)
 {
 	pthread_mutex_lock(&log_mu);

@@ -13,7 +13,7 @@
 
 typedef u32 shm_index;
 
-#ifdef __i386__
+#ifdef __i386__ // EMU is x32 programme
 extern u32 shm_base;
 #endif
 
@@ -23,7 +23,6 @@ typedef struct _shmem_list
     u32 prev;
 } __attribute__((packed)) shm_list;
 
-/* TODO: need to add size of one cmd and use different way to transfer data */
 /* cmd from fio stored in shmem*/
 typedef struct shm_cmd
 {
@@ -72,6 +71,7 @@ typedef enum LIST_TYPE
 
 #define SEM_NAME "sem_fio_emu"
 
+/* TODO: shm操作x64和x32合并，然后改变参数LIST_TYPE,不需要使用switch并且可以扩展新的List_type */
 #ifdef __i386__
 /* 
  * cause we can't use pointer in shmem for different memspace in two process
@@ -188,6 +188,11 @@ static inline shm_index shm_list_remove(LIST_TYPE l_t)
 
     return i;
 }
+
+void SHM_init();
+void SHM_get_rdy_list(shm_index *index, shm_cmd *scmd);
+void SHM_add_rdy_list(shm_index index, shm_cmd *scmd);
+void SHM_add_free_list(shm_index index);
 #elif __x86_64__
 static inline void shm_get(u64 shm_base)
 {

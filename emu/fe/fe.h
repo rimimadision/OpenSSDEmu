@@ -3,7 +3,7 @@
 
 // extern sem_t *sem_id;
 
-void fe_init();
+void FE_init();
 void *fe();
 
 #endif

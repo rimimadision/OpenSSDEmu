@@ -33,4 +33,5 @@ emu:
 clean:
 	rm -f $(BUILD_EMU_DIR)/* 
 	rm -f *.o *.d
+	rm -f flash_log
 all:init emu

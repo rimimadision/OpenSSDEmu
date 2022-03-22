@@ -581,10 +581,10 @@ unsigned int check_auto_rx_dma_partial_done(unsigned int tailIndex, unsigned int
 #include "../emu/emu_log.h"
 void set_auto_tx_dma(unsigned int cmdSlotTag, unsigned int cmd4KBOffset, unsigned int devAddr)
 {
-	emu_log_println(LOG, "do tx slot%d offset%d buf_addr %x", cmdSlotTag, cmd4KBOffset, devAddr);
+	EMU_log_println(LOG, "do tx slot%d offset%d buf_addr %x", cmdSlotTag, cmd4KBOffset, devAddr);
 }
 
 void set_auto_rx_dma(unsigned int cmdSlotTag, unsigned int cmd4KBOffset, unsigned int devAddr)
 {
-	emu_log_println(LOG, "do rx slot%u offset%u buf_addr %x", cmdSlotTag, cmd4KBOffset, devAddr);
+	EMU_log_println(LOG, "do rx slot%u offset%u buf_addr %x", cmdSlotTag, cmd4KBOffset, devAddr);
 }
