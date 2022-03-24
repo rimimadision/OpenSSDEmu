@@ -13,7 +13,8 @@ SRC+=../gc/gc.c
 OBJS=$(patsubst %.c,%.o,$(notdir $(SRC)))
 
 all:
-
+build:
+	$(CC) -o $(BUILD_EMU_DIR)/emu $(SRC) -lpthread -m32 -lrt
 init:
 	test -d $(BUILD_EMU_DIR) || mkdir -p $(BUILD_EMU_DIR)
 	rm -f $(BUILD_EMU_DIR)/* 
@@ -26,8 +27,8 @@ init:
 #     rm -f $@.$$$$
 # sinclude $(SOURCES:.c=.d)
 
-emu:
-	$(CC) -o $(BUILD_EMU_DIR)/emu $(SRC) -lpthread -m32 -lrt
+emu: build
+	
 	sudo $(BUILD_EMU_DIR)/emu 
 #2>&1 | tee emu_log 
 clean:

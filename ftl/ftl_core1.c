@@ -9,8 +9,6 @@
 #include "../emu/be/be.h"
 #include <stdlib.h>
 
-extern gc_command_entry *gcmd_entry;
-
 /**********************************************************************************
 Func    Name: FTL_core1_main
 Descriptions: core1ִ�е�ѭ��

@@ -1,9 +1,10 @@
 #include "fcl.h"
 
 #include "../lib/lock.h"
+#include "../config/config.h"
 
-static hw_queue *hw_SQ[4];
-static hw_queue *hw_CQ[4];
+static hw_queue *hw_SQ[TOTAL_CHANNEL];
+static hw_queue *hw_CQ[TOTAL_CHANNEL];
 
 #include "../emu/emu_config.h"
 #ifdef EMU
@@ -37,9 +38,9 @@ void FCL_init_flash_controller()
     FCL_set_mode(1);
 
     // reset
-    for (u32 ch = 0; ch < 4; ch++)
+    for (u32 ch = 0; ch < TOTAL_CHANNEL; ch++)
     {
-        for (u32 ce = 0; ce < 8; ce++)
+        for (u32 ce = 0; ce < (TOTAL_CE / TOTAL_CHANNEL); ce++)
         {
             FCL_nand_reset(ch, ce);
         }
@@ -52,9 +53,9 @@ void FCL_init_flash_controller()
 
     FCL_release_ch();
 
-    for (u32 ch = 0; ch < 4; ch++)
+    for (u32 ch = 0; ch < TOTAL_CHANNEL; ch++)
     {
-        for (u32 ce = 0; ce < 8; ce++)
+        for (u32 ce = 0; ce < (TOTAL_CE / TOTAL_CHANNEL); ce++)
         {
             FCL_set_feature_ddr(ch, ce);
         }
@@ -78,87 +79,28 @@ Return value: None
 ***********************************************************************************/
 void FCL_init_hw_queue()
 {
-    // 棣栧厛鏄痵q鐨勫垵濮嬪寲銆�
-    hw_SQ[0] = (hw_queue *)HW_CH0_SQ_ENTRY_ADDR;
-    hw_CQ[0] = (hw_queue *)HW_CH0_CQ_ENTRY_ADDR;
-
-    hw_SQ[1] = (hw_queue *)HW_CH1_SQ_ENTRY_ADDR;
-    hw_CQ[1] = (hw_queue *)HW_CH1_CQ_ENTRY_ADDR;
-
-    hw_SQ[2] = (hw_queue *)HW_CH2_SQ_ENTRY_ADDR;
-    hw_CQ[2] = (hw_queue *)HW_CH2_CQ_ENTRY_ADDR;
-
-    hw_SQ[3] = (hw_queue *)HW_CH3_SQ_ENTRY_ADDR;
-    hw_CQ[3] = (hw_queue *)HW_CH3_CQ_ENTRY_ADDR;
-
-    // initialize SQ.
-    memset(hw_SQ[0], 0x00, sizeof(hw_queue));
-    memset(hw_SQ[1], 0x00, sizeof(hw_queue));
-    memset(hw_SQ[2], 0x00, sizeof(hw_queue));
-    memset(hw_SQ[3], 0x00, sizeof(hw_queue));
-    for (u32 i = 0; i < HW_QUEUE_DEPTH; i++)
+    for (u32 i = 0; i < TOTAL_CHANNEL; i++)
     {
-        hw_SQ[0]->hw_queue[i].next_ptr = i + 1;
-        hw_SQ[0]->hw_queue[i].cur_ptr = i;
-        hw_SQ[1]->hw_queue[i].next_ptr = i + 1;
-        hw_SQ[1]->hw_queue[i].cur_ptr = i;
-        hw_SQ[2]->hw_queue[i].next_ptr = i + 1;
-        hw_SQ[2]->hw_queue[i].cur_ptr = i;
-        hw_SQ[3]->hw_queue[i].next_ptr = i + 1;
-        hw_SQ[3]->hw_queue[i].cur_ptr = i;
+        hw_SQ[i] = (hw_queue *)(HW_CH_SQ_ENTRY_ADDR + i * SQ_ENTRY_SZ_PER_CHANNEL);
+        hw_CQ[i] = (hw_queue *)(HW_CH_CQ_ENTRY_ADDR + i * CQ_ENTRY_SZ_PER_CHANNEL);
+        memset(hw_SQ[i], 0x00, sizeof(hw_queue));
+        for (u32 j = 0; j < HW_QUEUE_DEPTH; j++)
+        {
+            hw_SQ[i]->hw_queue[j].next_ptr = j + 1;
+            hw_SQ[i]->hw_queue[j].cur_ptr = j;
+        }
+        hw_SQ[i]->hw_queue[HW_QUEUE_DEPTH - 1].next_ptr = HW_QUEUE_DEPTH - 1;
+        u32 *hw_sq_bitmap = (u32 *)(HW_CH_SQ_BITMAP_ADDR + i * SQ_BITMAP_SZ_PER_CHANNEL);
+        memset(hw_sq_bitmap, 0x00, HW_QUEUE_DEPTH / 8);
+        memset(hw_CQ[i], 0xff, sizeof(hw_queue));
+        FCL_set_hw_base_addr(i, (u32)hw_SQ[i], (u32)hw_CQ[i]);
     }
-    hw_SQ[0]->hw_queue[HW_QUEUE_DEPTH - 1].next_ptr = HW_QUEUE_DEPTH - 1;
-    hw_SQ[1]->hw_queue[HW_QUEUE_DEPTH - 1].next_ptr = HW_QUEUE_DEPTH - 1;
-    hw_SQ[2]->hw_queue[HW_QUEUE_DEPTH - 1].next_ptr = HW_QUEUE_DEPTH - 1;
-    hw_SQ[3]->hw_queue[HW_QUEUE_DEPTH - 1].next_ptr = HW_QUEUE_DEPTH - 1;
-
-    // 鍒濆鍖栧搴旂殑bitmap
-    u32 *hw_sq_bitmap = (u32 *)(HW_CH0_SQ_BITMAP_ADDR);
-    memset(hw_sq_bitmap, 0x00, HW_QUEUE_DEPTH / 8);
-    hw_sq_bitmap = (u32 *)(HW_CH1_SQ_BITMAP_ADDR);
-    memset(hw_sq_bitmap, 0x00, HW_QUEUE_DEPTH / 8);
-    hw_sq_bitmap = (u32 *)(HW_CH2_SQ_BITMAP_ADDR);
-    memset(hw_sq_bitmap, 0x00, HW_QUEUE_DEPTH / 8);
-    hw_sq_bitmap = (u32 *)(HW_CH3_SQ_BITMAP_ADDR);
-    memset(hw_sq_bitmap, 0x00, HW_QUEUE_DEPTH / 8);
-
-    // initialize CQ.
-    memset(hw_CQ[0], 0xff, sizeof(hw_queue));
-    memset(hw_CQ[1], 0xff, sizeof(hw_queue));
-    memset(hw_CQ[2], 0xff, sizeof(hw_queue));
-    memset(hw_CQ[3], 0xff, sizeof(hw_queue));
-
-    FCL_set_hw_base_addr(0, HW_CH0_SQ_ENTRY_ADDR, HW_CH0_CQ_ENTRY_ADDR);
-    FCL_set_hw_base_addr(1, HW_CH1_SQ_ENTRY_ADDR, HW_CH1_CQ_ENTRY_ADDR);
-    FCL_set_hw_base_addr(2, HW_CH2_SQ_ENTRY_ADDR, HW_CH2_CQ_ENTRY_ADDR);
-    FCL_set_hw_base_addr(3, HW_CH3_SQ_ENTRY_ADDR, HW_CH3_CQ_ENTRY_ADDR);
 }
 
 void FCL_set_hw_base_addr(u32 ch, u32 sq_addr, u32 cq_addr)
 {
-    switch (ch)
-    {
-    case 0:
-        Xil_Out32((FLASH_CTL_CH0_REG_BASE_ADDR + 0x18), sq_addr);
-        Xil_Out32((FLASH_CTL_CH0_REG_BASE_ADDR + 0x1C), cq_addr);
-        break;
-    case 1:
-        Xil_Out32((FLASH_CTL_CH1_REG_BASE_ADDR + 0x18), sq_addr);
-        Xil_Out32((FLASH_CTL_CH1_REG_BASE_ADDR + 0x1C), cq_addr);
-        break;
-    case 2:
-        Xil_Out32((FLASH_CTL_CH2_REG_BASE_ADDR + 0x18), sq_addr);
-        Xil_Out32((FLASH_CTL_CH2_REG_BASE_ADDR + 0x1C), cq_addr);
-        break;
-    case 3:
-        Xil_Out32((FLASH_CTL_CH3_REG_BASE_ADDR + 0x18), sq_addr);
-        Xil_Out32((FLASH_CTL_CH3_REG_BASE_ADDR + 0x1C), cq_addr);
-        break;
-    }
-
-#ifndef EMU
-    asm("isb");
-#endif
+    Xil_Out32((FCTL_CH_REG_BASE_ADDR + ch * FCTL_SZ_PER_CH + 0x18), sq_addr);
+    Xil_Out32((FCTL_CH_REG_BASE_ADDR + ch * FCTL_SZ_PER_CH + 0x1C), cq_addr);
 }
 
 /**********************************************************************************
@@ -173,42 +115,9 @@ u32 FCL_get_free_SQ_entry(u32 ch)
 {
     u32 ret_index = 0;
     u32 find_flag = 0;
-    u32 *hw_sq_bitmap; // = (u32 *)(HW_CH0_SQ_BITMAP_ADDR+ch*HW_QUEUE_DEPTH);
+    u32 *hw_sq_bitmap = (u32 *)(HW_CH_SQ_BITMAP_ADDR + ch * SQ_BITMAP_SZ_PER_CHANNEL);
 
-    switch (ch)
-    {
-    case 0:
-        hw_sq_bitmap = (u32 *)(HW_CH0_SQ_BITMAP_ADDR);
-        break;
-    case 1:
-        hw_sq_bitmap = (u32 *)(HW_CH1_SQ_BITMAP_ADDR);
-        break;
-    case 2:
-        hw_sq_bitmap = (u32 *)(HW_CH2_SQ_BITMAP_ADDR);
-        break;
-    case 3:
-        hw_sq_bitmap = (u32 *)(HW_CH3_SQ_BITMAP_ADDR);
-        break;
-    default:
-        hw_sq_bitmap = 0;
-    }
-
-    switch (ch)
-    {
-    case 0:
-        get_spin_lock((u32 *)CH0_SQ_SPIN_LOCK);
-        break;
-    case 1:
-        get_spin_lock((u32 *)CH1_SQ_SPIN_LOCK);
-        break;
-    case 2:
-        get_spin_lock((u32 *)CH2_SQ_SPIN_LOCK);
-        break;
-    case 3:
-        get_spin_lock((u32 *)CH3_SQ_SPIN_LOCK);
-        break;
-    default:;
-    }
+    get_spin_lock((u32 *)(CH_SQ_SPIN_LOCK + ch * SPIN_LOCK_SZ));
 
     for (u32 i = 0; (i < HW_QUEUE_DEPTH / 32) && (find_flag == 0); i++)
     {
@@ -224,56 +133,18 @@ u32 FCL_get_free_SQ_entry(u32 ch)
         }
     }
 
-    switch (ch)
-    {
-    case 0:
-        release_spin_lock((u32 *)CH0_SQ_SPIN_LOCK);
-        break;
-    case 1:
-        release_spin_lock((u32 *)CH1_SQ_SPIN_LOCK);
-        break;
-    case 2:
-        release_spin_lock((u32 *)CH2_SQ_SPIN_LOCK);
-        break;
-    case 3:
-        release_spin_lock((u32 *)CH3_SQ_SPIN_LOCK);
-        break;
-    default:;
-    }
+    release_spin_lock((u32 *)(CH_SQ_SPIN_LOCK + ch * SPIN_LOCK_SZ));
 
     if (find_flag == 1)
     {
         return ret_index;
     }
-    else
-    {
-        return INVALID_INDEX;
-    }
-#ifndef EMU
-    asm("isb");
-#endif
+    return INVALID_INDEX;
 }
 
 u32 FCL_SQ_empty(u32 ch)
 {
-    u32 *hw_sq_bitmap;
-    switch (ch)
-    {
-    case 0:
-        hw_sq_bitmap = (u32 *)(HW_CH0_SQ_BITMAP_ADDR);
-        break;
-    case 1:
-        hw_sq_bitmap = (u32 *)(HW_CH1_SQ_BITMAP_ADDR);
-        break;
-    case 2:
-        hw_sq_bitmap = (u32 *)(HW_CH2_SQ_BITMAP_ADDR);
-        break;
-    case 3:
-        hw_sq_bitmap = (u32 *)(HW_CH3_SQ_BITMAP_ADDR);
-        break;
-    default:
-        hw_sq_bitmap = 0;
-    }
+    u32 *hw_sq_bitmap = (u32 *)(HW_CH_SQ_BITMAP_ADDR + ch * SQ_BITMAP_SZ_PER_CHANNEL);
 
     for (u32 i = 0; (i < HW_QUEUE_DEPTH / 32); i++)
     {
@@ -324,9 +195,6 @@ void FCL_set_SQ_entry(u32 hcmd_entry_index, u32 SQ_entry_index, u32 buffer_index
     }
     // 灏唄ost command鐨刬ndex浼犻�掑埌SQ entry涓��
     hw_SQ[ch]->hw_queue[SQ_entry_index].hcmd_index = hcmd_entry_index;
-#ifndef EMU
-    asm("isb");
-#endif
 }
 
 /**********************************************************************************
@@ -339,28 +207,7 @@ Return value: ce瀵勫瓨鍣ㄥ湴鍧�
 ***********************************************************************************/
 u32 FCL_get_fifo_status(u32 ch)
 {
-    u32 reg_data = 0;
-
-    switch (ch)
-    {
-    case 0:
-        reg_data = Xil_In32(FLASH_CTL_CH0_REG_BASE_ADDR + 0x24) & 0x000000ff;
-        break;
-    case 1:
-        reg_data = Xil_In32(FLASH_CTL_CH1_REG_BASE_ADDR + 0x24) & 0x000000ff;
-        break;
-    case 2:
-        reg_data = Xil_In32(FLASH_CTL_CH2_REG_BASE_ADDR + 0x24) & 0x000000ff;
-        break;
-    case 3:
-        reg_data = Xil_In32(FLASH_CTL_CH3_REG_BASE_ADDR + 0x24) & 0x000000ff;
-        break;
-    }
-
-#ifndef EMU
-    asm("isb");
-#endif
-    return reg_data;
+    return Xil_In32(FCTL_CH_REG_BASE_ADDR + ch * FCTL_SZ_PER_CH + 0x24) & 0x000000ff;
 }
 
 /**********************************************************************************
@@ -373,29 +220,7 @@ Return value: None
 ***********************************************************************************/
 void FCL_set_fifo(u32 index, u32 ch, u32 ce)
 {
-    u32 addr;
-    // ch = 1;
-    switch (ch)
-    {
-    case 0:
-        addr = (FLASH_CTL_CH0_QUEUE_BASE_ADDR + 0x04 * ce);
-        break;
-    case 1:
-        addr = (FLASH_CTL_CH1_QUEUE_BASE_ADDR + 0x04 * ce);
-        break;
-    case 2:
-        addr = (FLASH_CTL_CH2_QUEUE_BASE_ADDR + 0x04 * ce);
-        break;
-    case 3:
-        addr = (FLASH_CTL_CH3_QUEUE_BASE_ADDR + 0x04 * ce);
-        break;
-    default:
-        addr = 0;
-    }
-    Xil_Out32(addr, index);
-#ifndef EMU
-    asm("isb");
-#endif
+    Xil_Out32((FCTL_CH_QUEUE_BASE_ADDR + ch * FCTL_SZ_PER_CH + 0x04 * ce), index);
 }
 
 /**********************************************************************************
@@ -442,66 +267,14 @@ Return value: None
 void FCL_free_SQ_entry(u32 ch, u32 index)
 {
     u32 tmp_bit_val = 0;
-    u32 *hw_sq_bitmap;
+	u32 *hw_sq_bitmap = (u32 *)(HW_CH_SQ_BITMAP_ADDR + ch * SQ_BITMAP_SZ_PER_CHANNEL);
+	
+	get_spin_lock((u32 *)(CH_SQ_SPIN_LOCK + ch * SPIN_LOCK_SZ));
 
-    switch (ch)
-    {
-    case 0:
-        hw_sq_bitmap = (u32 *)(HW_CH0_SQ_BITMAP_ADDR);
-        break;
-    case 1:
-        hw_sq_bitmap = (u32 *)(HW_CH1_SQ_BITMAP_ADDR);
-        break;
-    case 2:
-        hw_sq_bitmap = (u32 *)(HW_CH2_SQ_BITMAP_ADDR);
-        break;
-    case 3:
-        hw_sq_bitmap = (u32 *)(HW_CH3_SQ_BITMAP_ADDR);
-        break;
-    default:
-        hw_sq_bitmap = 0;
-    }
+	tmp_bit_val = ~(1<<(index%32));
+	hw_sq_bitmap[index/32] &= tmp_bit_val;
 
-    switch (ch)
-    {
-    case 0:
-        get_spin_lock((u32 *)CH0_SQ_SPIN_LOCK);
-        break;
-    case 1:
-        get_spin_lock((u32 *)CH1_SQ_SPIN_LOCK);
-        break;
-    case 2:
-        get_spin_lock((u32 *)CH2_SQ_SPIN_LOCK);
-        break;
-    case 3:
-        get_spin_lock((u32 *)CH3_SQ_SPIN_LOCK);
-        break;
-    default:;
-    }
-
-    tmp_bit_val = ~(1 << (index % 32));
-    hw_sq_bitmap[index / 32] &= tmp_bit_val;
-
-    switch (ch)
-    {
-    case 0:
-        release_spin_lock((u32 *)CH0_SQ_SPIN_LOCK);
-        break;
-    case 1:
-        release_spin_lock((u32 *)CH1_SQ_SPIN_LOCK);
-        break;
-    case 2:
-        release_spin_lock((u32 *)CH2_SQ_SPIN_LOCK);
-        break;
-    case 3:
-        release_spin_lock((u32 *)CH3_SQ_SPIN_LOCK);
-        break;
-    default:;
-    }
-
-#ifndef EMU
-    asm("isb");
-#endif
+	release_spin_lock((u32 *)(CH_SQ_SPIN_LOCK + ch * SPIN_LOCK_SZ));
 }
 
 /**********************************************************************************
@@ -519,38 +292,20 @@ void FCL_set_timing(void)
     u32 is_bypass_ecc = 0;
     u32 is_bypass_scrm = 0;
     data = (is_bypass_ecc << 24) + (is_bypass_scrm << 28) + 0x03050F;
-    for (u32 ch = 0; ch < 4; ch++)
-    {
-        switch (ch)
-        {
-        case 0:
-            addr = FLASH_CTL_CH0_REG_BASE_ADDR;
-            break;
-        case 1:
-            addr = FLASH_CTL_CH1_REG_BASE_ADDR;
-            break;
-        case 2:
-            addr = FLASH_CTL_CH2_REG_BASE_ADDR;
-            break;
-        case 3:
-            addr = FLASH_CTL_CH3_REG_BASE_ADDR;
-            break;
-        }
+    for ( u32 ch = 0; ch < TOTAL_CHANNEL; ch ++ ){
+		addr = FCTL_CH_REG_BASE_ADDR + ch * FCTL_SZ_PER_CH;
         Xil_Out32(addr, data); // 00: ERASE_ADDR_NUM, ADDR_NUM, tADL
-        addr = addr + 4;
+        addr = addr + 4 ;
         Xil_Out32(addr, 0x04080804); // 04: CA
-        addr = addr + 4;
+        addr = addr + 4 ;
         Xil_Out32(addr, 0x04060404); // 08:
-        addr = addr + 4;
-        Xil_Out32(addr, 0x0404); // 0C:
-        addr = addr + 4;
-        Xil_Out32(addr, 0x0000); // 10: RE_PHASE, DQS_DELAY, DQ_DELAY
-        addr = addr + 4;
+        addr = addr + 4 ;
+        Xil_Out32(addr, 0x0404);     // 0C:
+        addr = addr + 4 ;
+        Xil_Out32(addr, 0x0000);     // 10: RE_PHASE, DQS_DELAY, DQ_DELAY
+        addr = addr + 4 ;
         Xil_Out32(addr, 0x04040404); // 14: DIN
     }
-#ifndef EMU
-    asm("isb");
-#endif
 }
 
 /**********************************************************************************

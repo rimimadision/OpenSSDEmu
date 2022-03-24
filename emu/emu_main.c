@@ -28,9 +28,9 @@ void EMU_init_ftl_moudles()
 	// FTL_setup_core1();
 	init_all_spin_lock();
 // //	FTL_erase_init();
-	GC_init();
+	// GC_init();
 	L2P_init();
-	GC_gather_init();
+	// GC_gather_init();
 }
 
 int main()

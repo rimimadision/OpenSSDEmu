@@ -18,22 +18,22 @@ void *fe()
     while (1)
     {
         usleep(100);
-        // emu_log_println(LOG, "fe");
-        // if(c == 1) return NULL;
-        // /* Add one test cmd */
-        // c++;
-        // shm_get();
-        // while(shm_list_empty(FREE_LIST))
-        // {
-        //     shm_release();
-        //     shm_get();
-        // }
-        // shm_index t_i = shm_list_remove(FREE_LIST);
-        // shm_cmd *t_cmd = SHM_SLOT(t_i);
-        // t_cmd->lpn = 20;
-        // t_cmd->ops = SHM_READ_OPS;//
-        // t_cmd->size = 16 * KB;
-        // shm_list_add(t_i, RDY_LIST);
-        // shm_release();
+        EMU_log_println(LOG, "fe");
+        if(c == 500) return NULL;
+        /* Add one test cmd */
+        c++;
+        shm_get();
+        while(shm_list_empty(FREE_LIST))
+        {
+            shm_release();
+            shm_get();
+        }
+        shm_index t_i = shm_list_remove(FREE_LIST);
+        shm_cmd *t_cmd = SHM_SLOT(t_i);
+        t_cmd->lpn = 20;
+        t_cmd->ops = SHM_READ_OPS;//
+        t_cmd->size = 16 * KB;
+        shm_list_add(t_i, RDY_LIST);
+        shm_release();
     }
 }

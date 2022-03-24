@@ -78,21 +78,15 @@ Return value: None
 ***********************************************************************************/
 void init_all_spin_lock()
 {
-    my_lock = (u32 *)GOBAL_SPIN_LOCK_1_ADDR;
+    my_lock = (u32 *)GLOBAL_SPIN_LOCK_1_ADDR;
 
-    init_spin_lock((u32 *)GOBAL_SPIN_LOCK_1_ADDR);
+    init_spin_lock((u32 *)GLOBAL_SPIN_LOCK_1_ADDR);
 
-    init_spin_lock((u32 *)CH0_SQ_SPIN_LOCK);
-    init_spin_lock((u32 *)CH1_SQ_SPIN_LOCK);
-    init_spin_lock((u32 *)CH2_SQ_SPIN_LOCK);
-    init_spin_lock((u32 *)CH3_SQ_SPIN_LOCK);
+    
+    for (int i = 0; i < TOTAL_CHANNEL; i++)
+    {
+        init_spin_lock((u32 *)(CH_SQ_SPIN_LOCK + i * SPIN_LOCK_SZ));
+    }
 
     init_spin_lock((u32 *)TQ_FROMCQ_SPIN_LOCK);
-
-    init_spin_lock((u32 *)TO_DATAMOVED_SPIN_LOCK);
-    init_spin_lock((u32 *)TO_FINISH_SPIN_LOCK);
-
-    init_spin_lock((u32 *)HCMD_MAP_SPIN_LOCK);
-
-    init_spin_lock((u32 *)SYN_ERASE_SPIN_LOCK);
 }
