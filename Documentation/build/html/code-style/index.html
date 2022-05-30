@@ -2,10 +2,10 @@
 <html class="no-js" lang="zh_CN">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="代码规范" href="../code-style/index.html" /><link rel="prev" title="文档" href="../doc-guide/index.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="搜索" href="../search.html" /><link rel="next" title="Usage" href="../usage.html" /><link rel="prev" title="测试" href="../test/index.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
-        <title>测试 - wukong-simulator v0.2 文档</title>
+        <title>代码规范 - wukong-simulator v0.2 文档</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -133,7 +133,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -155,8 +155,8 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../doc-guide/index.html">文档</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">测试</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../code-style/index.html">代码规范</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test/index.html">测试</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">代码规范</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
 </ul>
 
@@ -184,14 +184,25 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <div class="section" id="id1">
-<h1>测试<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<h1>代码规范<a class="headerlink" href="#id1" title="永久链接至标题">#</a></h1>
+<p>在本项目中，coding-style采用*****，并且使用clang-format来进行format.</p>
+<div class="section" id="llvm-coding-style">
+<h2>llvm coding-style<a class="headerlink" href="#llvm-coding-style" title="永久链接至标题">#</a></h2>
+</div>
+<div class="section" id="clang-format">
+<h2>clang-format<a class="headerlink" href="#clang-format" title="永久链接至标题">#</a></h2>
+<p>linux的代码规范 <a class="reference external" href="https://github.com/torvalds/linux/blob/master/.clang-format#L71">https://github.com/torvalds/linux/blob/master/.clang-format#L71</a></p>
+</div>
+<div class="section" id="clangd">
+<h2>clangd<a class="headerlink" href="#clangd" title="永久链接至标题">#</a></h2>
+</div>
 </div>
 
         </article>
@@ -199,23 +210,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../code-style/index.html">
+          <a class="next-page" href="../usage.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">代码规范</div>
+                <div class="title">Usage</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../doc-guide/index.html">
+          <a class="prev-page" href="../test/index.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">文档</div>
+                <div class="title">测试</div>
                 
               </div>
             </a>
@@ -239,8 +250,29 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            目录
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">代码规范</a><ul>
+<li><a class="reference internal" href="#llvm-coding-style">llvm coding-style</a></li>
+<li><a class="reference internal" href="#clang-format">clang-format</a></li>
+<li><a class="reference internal" href="#clangd">clangd</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
