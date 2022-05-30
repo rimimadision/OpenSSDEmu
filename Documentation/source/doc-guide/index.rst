@@ -53,8 +53,16 @@ Sphinx online deployment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 参考 `官方文档 <https://www.sphinx-doc.org/en/master/tutorial/deploying.html>`_
 
+.. warning:: 
+    
+    在 ``Github Pages`` 上部署文档，可能会碰到css样式失效的问题，
+    这是因为 ``Github Pages`` 托管在jekyll上，需要加上一个空的 ``.nojekyll`` 文件
+
 HOW-WRITE-DOCS
 ----------------
+
+加入新的文档
+~~~~~~~~~~~~
 
 reStructuredText语法介绍
 ~~~~~~~~~~~~~~~~~~~~~~~~~
