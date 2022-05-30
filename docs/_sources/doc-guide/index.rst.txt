@@ -29,8 +29,14 @@ Sphinx安装
     可以更加方便地移植,
     备份你的python环境
 
-Sphinx其他需要的python包
+Sphinx依赖的python包
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+使用 ``pip`` 检查依赖包
+
+.. code-block:: shell
+
+    pip install /Documentation/requirements.txt
 
 .. warning:: 
     
@@ -49,6 +55,40 @@ html 文档输出
     cd Documentation
     make html
 
+pdf 文档输出
+~~~~~~~~~~~~~~~~~~
+.. note:: 
+    
+    本项目输出的 ``pdf`` 中的中文使用的是free open source的 ``WenQuanYi Zen Hei``
+
+.. note:: 
+
+    本人使用的是 ``Ubuntu 20.04 LTS`` + ``aliyun mirror``
+    可能因为系统和镜像不同，需要安装的tex工具会不一样，可以根据 ``make latexpdf`` 的输出自行安装需要的工具,
+    此外，还需要安装一下自己缺少的字体，下面是本人的环境安装流程，可以参考一下
+
+.. warning:: 
+
+    强烈建议20分钟内没有 ``make`` 成功，来找 `本人 <xionghongkang2019@bupt.edu.cn>`_ 讨论一下,
+    也正好完善一下这部分文档
+
+
+
+.. code-block:: shell
+
+    # tex tools
+    sudo apt install latexmk
+    sudo apt install texlive-xelatex
+    sudo apt install texlive
+
+    # fonts
+    sudo apt install fonts-freefont-otf
+    sudo apt install fonts-wqy-zenhei
+
+    # 安装完成后
+    make latexpdf
+
+
 Sphinx online deployment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 参考 `官方文档 <https://www.sphinx-doc.org/en/master/tutorial/deploying.html>`_
@@ -60,6 +100,39 @@ Sphinx online deployment
 
 HOW-WRITE-DOCS
 ----------------
+
+加入新的文档
+~~~~~~~~~~~~
+
+下面以创建 ``NVMe`` 为例
+
+.. code-block:: shell
+
+    cd Documentation/source && mkdir nvme && cd nvme
+    echo "NVMe 文档" > index.rst
+    echo "==========" >> index.rst
+
+然后需要在起始的目录中加上这个文档
+
+.. code-block:: shell
+
+    cd Documentation/ && vim index.rst
+
+在index.rst末尾加入rst代码（也可以自己选择加在什么位置）
+
+.. code-block:: restructuredtext
+
+    Workflow介绍
+    ------------
+
+    .. toctree::
+    :maxdepth: 2
+    
+    doc-guide/index
+    test/index
+    code-style/index
+    usage
+
 
 reStructuredText语法介绍
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,13 +188,6 @@ reStructuredText提供了类似于 ``Markdown`` 中 ``#``
 .. image:: img/titles_example.png
    :scale: 80%
 
-.. .. image:: gnu.png
-..    :height: 100px (length)
-..    :width: 200px (length or percentage of the current line width)
-..    :scale: integer percentage (the "%" symbol is optional)
-..    :alt: alternate text
-..    :align: "top", "middle", "bottom", "left", "center", or "right"
-..    :target: text (URI or reference name)
 
 只需要通过如下代码实现：
 
@@ -159,14 +225,26 @@ reStructuredText提供了类似于 ``Markdown`` 中 ``#``
     特别是全局可能被使用的图片,
     这是为了防止交叉引用不同文件夹下图片带来的维护困难。
 
-    一般情况下请优先使用 SVG 格式的矢量图，使用位图请权衡好图片体积和清晰度。
+    一般情况下请优先使用 ``SVG`` 格式的矢量图，使用位图请权衡好图片体积和清晰度。
 
-    尽可能使用 Graphviz 或 Mermaid 语法绘制流程图。
+    尽可能使用 ``Graphviz`` 或 ``Mermaid`` 语法绘制流程图。
 
     图片文件名需要有相应的语义信息，不可使用完全随机生成的字符。
 
 普通图片
 ++++++++
+
+插入图片rst代码如下
+
+.. code-block:: restructuredtext
+
+    .. image:: gnu.png
+       :height: 100px (length)
+       :width: 200px (length or percentage of the current line width)
+       :scale: integer percentage (the "%" symbol is optional)
+       :alt: alternate text
+       :align: "top", "middle", "bottom", "left", "center", or "right"
+       :target: text (URI or reference name)
 
 流程图
 +++++++

@@ -63,3 +63,18 @@ html_theme = 'furo'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# latex_engine = 'lualatex'
+
+latex_elements = {
+    'papersize': 'a4paper',
+    'preamble': '''
+\\usepackage{xeCJK}
+\\usepackage{indentfirst}
+\\setlength{\\parindent}{2em}
+\\setCJKmainfont{WenQuanYi Zen Hei Sharp}
+\\setCJKmonofont[Scale=0.9]{WenQuanYi Zen Hei Mono}
+\\setCJKfamilyfont{song}{WenQuanYi Zen Hei}
+\\setCJKfamilyfont{sf}{WenQuanYi Zen Hei}
+'''
+}

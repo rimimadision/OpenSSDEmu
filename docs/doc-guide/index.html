@@ -215,7 +215,11 @@
 </div>
 </div>
 <div class="section" id="sphinxpython">
-<h3>Sphinx其他需要的python包<a class="headerlink" href="#sphinxpython" title="永久链接至标题">#</a></h3>
+<h3>Sphinx依赖的python包<a class="headerlink" href="#sphinxpython" title="永久链接至标题">#</a></h3>
+<p>使用 <code class="docutils literal notranslate"><span class="pre">pip</span></code> 检查依赖包</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install /Documentation/requirements.txt
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">警告</p>
 <p>目前需要的python包仅有 <code class="docutils literal notranslate"><span class="pre">furo</span></code>,
@@ -232,6 +236,37 @@ make html
 </pre></div>
 </div>
 </div>
+<div class="section" id="pdf">
+<h3>pdf 文档输出<a class="headerlink" href="#pdf" title="永久链接至标题">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>本项目输出的 <code class="docutils literal notranslate"><span class="pre">pdf</span></code> 中的中文使用的是free open source的 <code class="docutils literal notranslate"><span class="pre">WenQuanYi</span> <span class="pre">Zen</span> <span class="pre">Hei</span></code></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>本人使用的是 <code class="docutils literal notranslate"><span class="pre">Ubuntu</span> <span class="pre">20.04</span> <span class="pre">LTS</span></code> + <code class="docutils literal notranslate"><span class="pre">aliyun</span> <span class="pre">mirror</span></code>
+可能因为系统和镜像不同，需要安装的tex工具会不一样，可以根据 <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">latexpdf</span></code> 的输出自行安装需要的工具,
+此外，还需要安装一下自己缺少的字体，下面是本人的环境安装流程，可以参考一下</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>强烈建议20分钟内没有 <code class="docutils literal notranslate"><span class="pre">make</span></code> 成功，来找 <a class="reference external" href="mailto:xionghongkang2019%40bupt.edu.cn">本人</a> 讨论一下,
+也正好完善一下这部分文档</p>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># tex tools</span>
+sudo apt install latexmk
+sudo apt install texlive-xelatex
+sudo apt install texlive
+
+<span class="c1"># fonts</span>
+sudo apt install fonts-freefont-otf
+sudo apt install fonts-wqy-zenhei
+
+<span class="c1"># 安装完成后</span>
+make latexpdf
+</pre></div>
+</div>
+</div>
 <div class="section" id="sphinx-online-deployment">
 <h3>Sphinx online deployment<a class="headerlink" href="#sphinx-online-deployment" title="永久链接至标题">#</a></h3>
 <p>参考 <a class="reference external" href="https://www.sphinx-doc.org/en/master/tutorial/deploying.html">官方文档</a></p>
@@ -244,6 +279,32 @@ make html
 </div>
 <div class="section" id="how-write-docs">
 <h2>HOW-WRITE-DOCS<a class="headerlink" href="#how-write-docs" title="永久链接至标题">#</a></h2>
+<div class="section" id="id4">
+<h3>加入新的文档<a class="headerlink" href="#id4" title="永久链接至标题">#</a></h3>
+<p>下面以创建 <code class="docutils literal notranslate"><span class="pre">NVMe</span></code> 为例</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> Documentation/source <span class="o">&amp;&amp;</span> mkdir nvme <span class="o">&amp;&amp;</span> <span class="nb">cd</span> nvme
+<span class="nb">echo</span> <span class="s2">"NVMe 文档"</span> &gt; index.rst
+<span class="nb">echo</span> <span class="s2">"=========="</span> &gt;&gt; index.rst
+</pre></div>
+</div>
+<p>然后需要在起始的目录中加上这个文档</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> Documentation/ <span class="o">&amp;&amp;</span> vim index.rst
+</pre></div>
+</div>
+<p>在index.rst末尾加入rst代码（也可以自己选择加在什么位置）</p>
+<div class="highlight-restructuredtext notranslate"><div class="highlight"><pre><span></span><span class="gh">Workflow介绍</span>
+<span class="gh">------------</span>
+
+<span class="p">..</span> <span class="ow">toctree</span><span class="p">::</span>
+<span class="nc">:maxdepth:</span> 2
+
+doc-guide/index
+test/index
+code-style/index
+usage
+</pre></div>
+</div>
+</div>
 <div class="section" id="restructuredtext">
 <h3>reStructuredText语法介绍<a class="headerlink" href="#restructuredtext" title="永久链接至标题">#</a></h3>
 <div class="admonition note">
@@ -251,17 +312,17 @@ make html
 <p>这里只列出了部分语法，如果在文档中使用到了新的语法，请在下面 <strong>补上</strong>。</p>
 <p>更多的语法可以在
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/contents.html">Sphinx 官方文档找到</a>,
-也可以参考Megengine的教程 <a class="footnote-reference brackets" href="#id22" id="id4">2</a></p>
+也可以参考Megengine的教程 <a class="footnote-reference brackets" href="#id24" id="id6">2</a></p>
 </div>
 </div>
-<div class="section" id="id5">
-<h3>字体样式<a class="headerlink" href="#id5" title="永久链接至标题">#</a></h3>
+<div class="section" id="id7">
+<h3>字体样式<a class="headerlink" href="#id7" title="永久链接至标题">#</a></h3>
 <div class="admonition note">
 <p class="admonition-title">注解</p>
 <p>注意当前后有其他字符时，加空格才能生效。</p>
 </div>
-<div class="section" id="id6">
-<h4>斜体<a class="headerlink" href="#id6" title="永久链接至标题">#</a></h4>
+<div class="section" id="id8">
+<h4>斜体<a class="headerlink" href="#id8" title="永久链接至标题">#</a></h4>
 <p><em>斜体</em></p>
 <div class="highlight-restructuredtext notranslate"><div class="highlight"><pre><span></span><span class="ge">*斜体*</span>
 <span class="cp">.. 或者</span>
@@ -269,23 +330,23 @@ make html
 </pre></div>
 </div>
 </div>
-<div class="section" id="id7">
-<h4>粗体<a class="headerlink" href="#id7" title="永久链接至标题">#</a></h4>
+<div class="section" id="id9">
+<h4>粗体<a class="headerlink" href="#id9" title="永久链接至标题">#</a></h4>
 <p><strong>粗体</strong></p>
 <div class="highlight-restructuredtext notranslate"><div class="highlight"><pre><span></span><span class="gs">**粗体**</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id8">
-<h4>等宽按钮<a class="headerlink" href="#id8" title="永久链接至标题">#</a></h4>
+<div class="section" id="id10">
+<h4>等宽按钮<a class="headerlink" href="#id10" title="永久链接至标题">#</a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">按钮</span></code></p>
 <div class="highlight-restructuredtext notranslate"><div class="highlight"><pre><span></span><span class="s">``按钮``</span>
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="id9">
-<h3>多级标题<a class="headerlink" href="#id9" title="永久链接至标题">#</a></h3>
+<div class="section" id="id11">
+<h3>多级标题<a class="headerlink" href="#id11" title="永久链接至标题">#</a></h3>
 <p>reStructuredText提供了类似于 <code class="docutils literal notranslate"><span class="pre">Markdown</span></code> 中 <code class="docutils literal notranslate"><span class="pre">#</span></code>
 功能的多级标题，如下：</p>
 <a class="reference internal image-reference" href="../_images/titles_example.png"><img alt="../_images/titles_example.png" src="../_images/titles_example.png" style="width: 216.0px; height: 266.40000000000003px;"/></a>
@@ -310,28 +371,38 @@ make html
 </pre></div>
 </div>
 </div>
-<div class="section" id="id10">
-<h3>列表<a class="headerlink" href="#id10" title="永久链接至标题">#</a></h3>
-</div>
-<div class="section" id="id11">
-<h3>表格<a class="headerlink" href="#id11" title="永久链接至标题">#</a></h3>
-</div>
 <div class="section" id="id12">
-<h3>图片<a class="headerlink" href="#id12" title="永久链接至标题">#</a></h3>
+<h3>列表<a class="headerlink" href="#id12" title="永久链接至标题">#</a></h3>
+</div>
+<div class="section" id="id13">
+<h3>表格<a class="headerlink" href="#id13" title="永久链接至标题">#</a></h3>
+</div>
+<div class="section" id="id14">
+<h3>图片<a class="headerlink" href="#id14" title="永久链接至标题">#</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">警告</p>
 <p>注意文档中所使用的图片尽量放置在 <code class="docutils literal notranslate"><span class="pre">source/_static/images</span></code> 目录内,
 特别是全局可能被使用的图片,
 这是为了防止交叉引用不同文件夹下图片带来的维护困难。</p>
-<p>一般情况下请优先使用 SVG 格式的矢量图，使用位图请权衡好图片体积和清晰度。</p>
-<p>尽可能使用 Graphviz 或 Mermaid 语法绘制流程图。</p>
+<p>一般情况下请优先使用 <code class="docutils literal notranslate"><span class="pre">SVG</span></code> 格式的矢量图，使用位图请权衡好图片体积和清晰度。</p>
+<p>尽可能使用 <code class="docutils literal notranslate"><span class="pre">Graphviz</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Mermaid</span></code> 语法绘制流程图。</p>
 <p>图片文件名需要有相应的语义信息，不可使用完全随机生成的字符。</p>
 </div>
-<div class="section" id="id13">
-<h4>普通图片<a class="headerlink" href="#id13" title="永久链接至标题">#</a></h4>
+<div class="section" id="id15">
+<h4>普通图片<a class="headerlink" href="#id15" title="永久链接至标题">#</a></h4>
+<p>插入图片rst代码如下</p>
+<div class="highlight-restructuredtext notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">image</span><span class="p">::</span> gnu.png
+   <span class="nc">:height:</span> 100px (length)
+   <span class="nc">:width:</span> 200px (length or percentage of the current line width)
+   <span class="nc">:scale:</span> integer percentage (the "%" symbol is optional)
+   <span class="nc">:alt:</span> alternate text
+   <span class="nc">:align:</span> "top", "middle", "bottom", "left", "center", or "right"
+   <span class="nc">:target:</span> text (URI or reference name)
+</pre></div>
 </div>
-<div class="section" id="id14">
-<h4>流程图<a class="headerlink" href="#id14" title="永久链接至标题">#</a></h4>
+</div>
+<div class="section" id="id16">
+<h4>流程图<a class="headerlink" href="#id16" title="永久链接至标题">#</a></h4>
 <div class="section" id="graphviz">
 <h5>Graphviz语法<a class="headerlink" href="#graphviz" title="永久链接至标题">#</a></h5>
 </div>
@@ -340,17 +411,17 @@ make html
 </div>
 </div>
 </div>
-<div class="section" id="id15">
-<h3>注释<a class="headerlink" href="#id15" title="永久链接至标题">#</a></h3>
-</div>
-<div class="section" id="id16">
-<h3>交叉引用<a class="headerlink" href="#id16" title="永久链接至标题">#</a></h3>
-</div>
 <div class="section" id="id17">
-<h3>脚注<a class="headerlink" href="#id17" title="永久链接至标题">#</a></h3>
+<h3>注释<a class="headerlink" href="#id17" title="永久链接至标题">#</a></h3>
+</div>
+<div class="section" id="id18">
+<h3>交叉引用<a class="headerlink" href="#id18" title="永久链接至标题">#</a></h3>
+</div>
+<div class="section" id="id19">
+<h3>脚注<a class="headerlink" href="#id19" title="永久链接至标题">#</a></h3>
 <p>当我们引用别人的内容，最好在文档中标出😂，如下：</p>
 <p>Code that you wrote 6 months ago is often
-indistinguishable. <a class="footnote-reference brackets" href="#id21" id="id18">1</a></p>
+indistinguishable. <a class="footnote-reference brackets" href="#id23" id="id20">1</a></p>
 <p>代码如下：</p>
 <div class="highlight-restructuredtext notranslate"><div class="highlight"><pre><span></span>Code that you wrote 6 months ago is often
 indistinguishable. <span class="s">[1]_</span>
@@ -361,11 +432,11 @@ indistinguishable. <span class="s">[1]_</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id19">
-<h3>引用<a class="headerlink" href="#id19" title="永久链接至标题">#</a></h3>
+<div class="section" id="id21">
+<h3>引用<a class="headerlink" href="#id21" title="永久链接至标题">#</a></h3>
 </div>
-<div class="section" id="id20">
-<h3>其他注意事项<a class="headerlink" href="#id20" title="永久链接至标题">#</a></h3>
+<div class="section" id="id22">
+<h3>其他注意事项<a class="headerlink" href="#id22" title="永久链接至标题">#</a></h3>
 <p>尽量不要在rst文件的 <em>中文文本</em> 中一行话中途换行,
 否则可能出现多余的空格。这可能和这个模板没有特别支持中文有关。</p>
 <p>你可以使用英文逗号来解决这个问题。</p>
@@ -383,10 +454,10 @@ indistinguishable. <span class="s">[1]_</span>
 </div>
 <p class="rubric">Footnotes</p>
 <dl class="footnote brackets">
-<dt class="label" id="id21"><span class="brackets"><a class="fn-backref" href="#id18">1</a></span></dt>
+<dt class="label" id="id23"><span class="brackets"><a class="fn-backref" href="#id20">1</a></span></dt>
 <dd><p><a class="reference external" href="https://www.writethedocs.org/guide/writing/beginners-guide-to-docs/#you-will-be-using-your-code-in-6-months/">Beginners Guide To Docs</a></p>
 </dd>
-<dt class="label" id="id22"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
+<dt class="label" id="id24"><span class="brackets"><a class="fn-backref" href="#id6">2</a></span></dt>
 <dd><p><a class="reference external" href="https://www.megengine.org.cn/doc/stable/zh/development/docs/restructuredtext.html#graphviz-ext">megengine的Sphinx教程</a></p>
 </dd>
 </dl>
@@ -454,36 +525,38 @@ indistinguishable. <span class="s">[1]_</span>
 <li><a class="reference internal" href="#">文档</a><ul>
 <li><a class="reference internal" href="#new-to-sphinx">NEW-TO-Sphinx</a><ul>
 <li><a class="reference internal" href="#sphinx">Sphinx安装</a></li>
-<li><a class="reference internal" href="#sphinxpython">Sphinx其他需要的python包</a></li>
+<li><a class="reference internal" href="#sphinxpython">Sphinx依赖的python包</a></li>
 <li><a class="reference internal" href="#html">html 文档输出</a></li>
+<li><a class="reference internal" href="#pdf">pdf 文档输出</a></li>
 <li><a class="reference internal" href="#sphinx-online-deployment">Sphinx online deployment</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#how-write-docs">HOW-WRITE-DOCS</a><ul>
+<li><a class="reference internal" href="#id4">加入新的文档</a></li>
 <li><a class="reference internal" href="#restructuredtext">reStructuredText语法介绍</a></li>
-<li><a class="reference internal" href="#id5">字体样式</a><ul>
-<li><a class="reference internal" href="#id6">斜体</a></li>
-<li><a class="reference internal" href="#id7">粗体</a></li>
-<li><a class="reference internal" href="#id8">等宽按钮</a></li>
+<li><a class="reference internal" href="#id7">字体样式</a><ul>
+<li><a class="reference internal" href="#id8">斜体</a></li>
+<li><a class="reference internal" href="#id9">粗体</a></li>
+<li><a class="reference internal" href="#id10">等宽按钮</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id9">多级标题</a></li>
-<li><a class="reference internal" href="#id10">列表</a></li>
-<li><a class="reference internal" href="#id11">表格</a></li>
-<li><a class="reference internal" href="#id12">图片</a><ul>
-<li><a class="reference internal" href="#id13">普通图片</a></li>
-<li><a class="reference internal" href="#id14">流程图</a><ul>
+<li><a class="reference internal" href="#id11">多级标题</a></li>
+<li><a class="reference internal" href="#id12">列表</a></li>
+<li><a class="reference internal" href="#id13">表格</a></li>
+<li><a class="reference internal" href="#id14">图片</a><ul>
+<li><a class="reference internal" href="#id15">普通图片</a></li>
+<li><a class="reference internal" href="#id16">流程图</a><ul>
 <li><a class="reference internal" href="#graphviz">Graphviz语法</a></li>
 <li><a class="reference internal" href="#mermaid">Mermaid语法</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id15">注释</a></li>
-<li><a class="reference internal" href="#id16">交叉引用</a></li>
-<li><a class="reference internal" href="#id17">脚注</a></li>
-<li><a class="reference internal" href="#id19">引用</a></li>
-<li><a class="reference internal" href="#id20">其他注意事项</a></li>
+<li><a class="reference internal" href="#id17">注释</a></li>
+<li><a class="reference internal" href="#id18">交叉引用</a></li>
+<li><a class="reference internal" href="#id19">脚注</a></li>
+<li><a class="reference internal" href="#id21">引用</a></li>
+<li><a class="reference internal" href="#id22">其他注意事项</a></li>
 </ul>
 </li>
 </ul>
