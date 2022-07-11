@@ -1,7 +1,7 @@
 文档
 ====
 
-NEW-TO-Sphinx
+Sphinx入门
 --------------
 
 我们使用Sphinx来生成文档,
@@ -91,7 +91,7 @@ pdf 文档输出
 
 Sphinx online deployment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-参考 `官方文档 <https://www.sphinx-doc.org/en/master/tutorial/deploying.html>`_
+参考 `官方文档 <https://www.sphinx-doc.org/en/master/tutorial/deploying.html>`_ 
 
 .. warning:: 
     
@@ -142,7 +142,7 @@ reStructuredText语法介绍
 
     更多的语法可以在
     `Sphinx 官方文档找到 <https://www.sphinx-doc.org/en/master/contents.html>`_,
-    也可以参考Megengine的教程 [2]_
+    也可以参考Megengine的教程 [2]_ 以及 `这份英文教程 <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html>`_
 
 字体样式
 ~~~~~~~~~~
@@ -214,8 +214,113 @@ reStructuredText提供了类似于 ``Markdown`` 中 ``#``
 列表
 ~~~~~~
 
+这部分列表参考了 `Megengine的教程 <https://www.megengine.org.cn/doc/stable/zh/development/docs/restructuredtext.html#list>`_ 的教程
+
+定义列表
++++++++++
+.. code-block:: restructuredtext
+
+    术语 （限定在一行文本）
+        术语的定义，必须使用缩进。
+
+    支持使用多个段落。
+
+    下一个术语
+        下一个术语对应的定义。
+
+术语 （限定在一行文本）
+   术语的定义，必须使用缩进。
+
+   支持使用多个段落。
+
+下一个术语
+   下一个术语对应的定义。
+
+
+无序列表
+++++++++++++
+
+.. code-block:: restructuredtext
+    
+    * A
+    * B
+
+* A 
+* B
+
 表格
 ~~~~~~
+
+这部分 `参考了Megengine <https://www.megengine.org.cn/doc/stable/zh/development/docs/restructuredtext.html#tables>`_ 的教程
+
+网格表
+++++++++
+
+.. code-block:: restructuredtext
+
+    +------------------------+------------+----------+----------+
+    | Header row, column 1   | Header 2   | Header 3 | Header 4 |
+    | (header rows optional) |            |          |          |
+    +========================+============+==========+==========+
+    | body row 1, column 1   | column 2   | column 3 | column 4 |
+    +------------------------+------------+----------+----------+
+    | body row 2             | ...        | ...      |          |
+    +------------------------+------------+----------+----------+
+
++------------------------+------------+----------+----------+
+| Header row, column 1   | Header 2   | Header 3 | Header 4 |
+| (header rows optional) |            |          |          |
++========================+============+==========+==========+
+| body row 1, column 1   | column 2   | column 3 | column 4 |
++------------------------+------------+----------+----------+
+| body row 2             | ...        | ...      |          |
++------------------------+------------+----------+----------+
+
+也可以用下面这种更加简单的方式
+
+.. code-block:: restructuredtext
+
+    =====  =====  =======
+    A      B      A and B
+    =====  =====  =======
+    False  False  False
+    True   False  False
+    False  True   False
+    True   True   True
+    =====  =====  =======
+
+=====  =====  =======
+A      B      A and B
+=====  =====  =======
+False  False  False
+True   False  False
+False  True   False
+True   True   True
+=====  =====  =======
+
+CSV
++++++++
+
+.. code-block:: restructuredtext
+
+    .. csv-table:: Frozen Delights!
+   :header: "Treat", "Quantity", "Description"
+   :widths: 15, 10, 30
+
+   "Albatross", 2.99, "On a stick!"
+   "Crunchy Frog", 1.49, "If we took the bones out,
+   it wouldn't becrunchy, now would it?"
+   "Gannet Ripple", 1.99, "On a stick!"
+
+.. csv-table:: Frozen Delights!
+    
+   :header: "Treat", "Quantity", "Description"
+   :widths: 15, 10, 30
+
+   "Albatross", 2.99, "On a stick!"
+   "Crunchy Frog", 1.49, "If we took the bones out,
+   it wouldn't becrunchy, now would it?"
+   "Gannet Ripple", 1.99, "On a stick!"
 
 图片
 ~~~~
@@ -261,9 +366,20 @@ Mermaid语法
 交叉引用
 ~~~~~~~~
 
+引用文档内的标题
++++++++++++++++++
+
+.. code-block:: restructuredtext
+
+    :doc:`nvme </nvme/index>`
+
+效果：
+:doc:`nvme </nvme/index>`
+
+
 脚注
 ~~~~~
-当我们引用别人的内容，最好在文档中标出😂，如下：
+当我们引用别人的内容，最好在文档中标出:-)，如下：
 
 Code that you wrote 6 months ago is often 
 indistinguishable. [1]_
