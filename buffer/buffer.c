@@ -6,6 +6,7 @@
 
 hash_table *hash_table_ptr;
 hcmd_buf_table *hcmd_buf_table_ptr;
+buffer_list *buffer_list_ptr;
 
 u32 get_hash_code(u32 key);
 buffer_entry  *search_hash_table_entry(u32 key);

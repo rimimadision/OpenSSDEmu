@@ -40,7 +40,7 @@ typedef struct _buffer_list{
 	buffer_entry buffer_entry[BUFFER_NUMBER];
 }buffer_list;
 
-buffer_list *buffer_list_ptr;
+extern buffer_list *buffer_list_ptr;
 
 #define INVALID_BUFF_ID (0xffffffff)
 #define INVALID_BUFF_INDEX (0xffffffff)
